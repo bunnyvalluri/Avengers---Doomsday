@@ -44,7 +44,7 @@ export default function TimelineImage() {
 
     const pan = panRef.current;
     if (pan) {
-      const imgH = imgRef.current?.offsetHeight || window.innerWidth * IMG_ASPECT;
+      const imgH = window.innerWidth * IMG_ASPECT;
       const dist = Math.max(0, imgH - window.innerHeight);
       pan.style.transform = `translate3d(0, ${(-m * dist).toFixed(1)}px, 0)`;
     }

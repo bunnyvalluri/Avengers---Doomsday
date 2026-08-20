@@ -61,26 +61,26 @@ export const VIDEO = {
  * frame feel.
  */
 export const SCROLL = {
-  introAtmos: 140, // Section 1 — the void + storm builds
-  marvelScrub: 240, // Section 1 — Marvel intro scrubs
-  transition: 140, // continuous portal dive into the Hero
-  heroText: 260, // Hero — cinematic text sequence (video hidden)
-  heroScrub: 340, // Hero — Doom video appears fullscreen + scrubs
-  heroOutro: 80, // Hero settle
+  introAtmos: 60, // Section 1 — the void + storm builds
+  marvelScrub: 110, // Section 1 — Marvel intro scrubs
+  transition: 60, // continuous portal dive into the Hero
+  heroText: 110, // Hero — cinematic text sequence (video hidden)
+  heroScrub: 140, // Hero — Doom video appears fullscreen + scrubs
+  heroOutro: 40, // Hero settle
   // ── Phase 2 · Section 2 (character showcase) ──
-  showcaseRise: 160, // Hero fades / Section 2 rises from the bottom, model appears
-  showcaseOrbit: 360, // the 6 cards orbit the model, active card cycles to front
-  showcaseOut: 70, // settle
+  showcaseRise: 70, // Hero fades / Section 2 rises from the bottom, model appears
+  showcaseOrbit: 160, // the 6 cards orbit the model, active card cycles to front
+  showcaseOut: 35, // settle
   // ── Phase 3 · Section 3 (cinematic story stack) ──
-  storyStack: 660, // 6 fullscreen panels rise + stack sequentially (pinned)
+  storyStack: 260, // 6 fullscreen panels rise + stack sequentially (pinned)
   // ── Phase 4 · Section 4 (horizontal cinematic timeline) ──
-  reelStrip: 680, // pinned; vertical scroll drives the strip right→left
+  reelStrip: 260, // pinned; vertical scroll drives the strip right→left
   // ── Phase 5 · Section 5 (scroll-scrubbed battle: Thor → Doom → Cap) ──
-  finaleScrub: 760, // the battle video scrubs frame-by-frame with scroll
+  finaleScrub: 280, // the battle video scrubs frame-by-frame with scroll
   // ── Ending · Section 6 (MCU timeline artwork) + 7 (title reveal) + footer ──
-  mcuPan: 560, // the tall MCU timeline pans vertically with scroll
-  titleHold: 300, // the AVENGERS DOOMSDAY title reveal autoplays/holds
-  footerReveal: 150, // the minimal footer rises at the very end
+  mcuPan: 220, // the tall MCU timeline pans vertically with scroll
+  titleHold: 120, // the AVENGERS DOOMSDAY title reveal autoplays/holds
+  footerReveal: 65, // the minimal footer rises at the very end
 } as const;
 
 /**

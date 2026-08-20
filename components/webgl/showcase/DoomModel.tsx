@@ -203,22 +203,12 @@ export default function DoomModel() {
       baseRef.current.scale.setScalar(1 + Math.sin(t * 0.9) * 0.04);
     }
 
-    // cape sway — travelling cloth wave
+    // cape sway — smooth transform oscillation (zero GPU buffer thrashing)
     const cape = capeRef.current;
-    const base = capeBase.current;
-    if (cape && base) {
-      const p = cape.geometry.attributes.position as THREE.BufferAttribute;
-      const arr = p.array as Float32Array;
-      for (let i = 0; i < p.count; i++) {
-        const bx = base[i * 3];
-        const by = base[i * 3 + 1];
-        const bz = base[i * 3 + 2];
-        const ny = (by + 1.25) / 2.5;
-        const wave = Math.sin(t * 1.6 + by * 2.2 + bx * 1.5) * (1 - ny) * 0.14;
-        arr[i * 3] = bx + wave * 0.3;
-        arr[i * 3 + 2] = bz + wave;
-      }
-      p.needsUpdate = true;
+    if (cape) {
+      cape.rotation.z = Math.sin(t * 1.5) * 0.04;
+      cape.rotation.y = Math.cos(t * 1.2) * 0.03;
+      cape.position.x = Math.sin(t * 1.5) * 0.02;
     }
   });
 

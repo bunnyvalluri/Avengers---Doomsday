@@ -7,7 +7,7 @@ import { onStrike, signals, onCue } from "@/lib/signals";
 
 const HALF_W = 5.4;
 const HALF_H = 3.1;
-const COUNT = 1400;
+const COUNT = 500;
 
 /**
  * Pooled spark bursts. Each lightning strike (and the Scene-04 detonation)

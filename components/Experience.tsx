@@ -109,7 +109,7 @@ export default function Experience() {
         trigger: trackRef.current,
         start: "top top",
         end: "bottom bottom",
-        scrub: 1,
+        scrub: 0.25,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           signals.scroll = self.progress;

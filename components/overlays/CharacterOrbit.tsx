@@ -86,27 +86,34 @@ export default function CharacterOrbit() {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
 
-    const wantPlay = s > 0.006; // play while the section is (near) visible
+    if (s <= 0.001 || s >= 0.999) {
+      for (const v of videoRefs.current) {
+        if (v && !v.paused) v.pause();
+      }
+      for (const card of cardRefs.current) {
+        if (card && card.style.visibility !== "hidden") card.style.visibility = "hidden";
+      }
+      return;
+    }
+
+    const wantPlay = s > 0.01 && s < 0.98;
     const Rx = vw * 0.3; // horizontal orbit radius
     const Ry = vh * 0.15; // vertical tilt (front lower, back higher)
     const base = s * TAU * 0.85 + t * 0.045; // scroll rotates the ring + slow idle
     const N = CHARACTERS.length;
 
     for (let i = 0; i < N; i++) {
-      const vid = videoRefs.current[i];
-      if (vid) {
-        if (wantPlay && vid.paused) vid.play().catch(() => {});
-        else if (!wantPlay && s < 0.002 && !vid.paused) vid.pause();
-      }
-
       const card = cardRefs.current[i];
       if (!card) continue;
 
       // staggered fly-in from the right as the section rises
       const enterAt = 0.05 + i * 0.055;
       const enter = smoothstep(enterAt, enterAt + 0.16, s);
+      const vid = videoRefs.current[i];
+
       if (enter <= 0.001) {
         if (card.style.visibility !== "hidden") card.style.visibility = "hidden";
+        if (vid && !vid.paused) vid.pause();
         continue;
       }
       card.style.visibility = "visible";
@@ -114,6 +121,14 @@ export default function CharacterOrbit() {
       const theta = base + i * (TAU / N);
       const d = Math.cos(theta); // 1 = front, -1 = behind the model
       const depth01 = (d + 1) / 2; // 0 back .. 1 front
+
+      if (vid) {
+        if (wantPlay && depth01 > 0.18) {
+          if (vid.paused) vid.play().catch(() => {});
+        } else if (!vid.paused) {
+          vid.pause();
+        }
+      }
       const x = Math.sin(theta) * Rx;
       const y = d * Ry;
       const scale = lerp(0.6, 1.06, depth01) * lerp(0.5, 1, enter);

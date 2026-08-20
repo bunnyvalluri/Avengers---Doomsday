@@ -45,12 +45,17 @@ export function primeElement(el: HTMLVideoElement | null) {
   }
 }
 
-/** Seek a scrubbed video, skipping micro-moves that would thrash the decoder. */
+/** Seek a scrubbed video with hardware-accelerated fastSeek and frame throttling. */
 export function scrubEl(el: HTMLVideoElement | null, t: number) {
   if (!el || el.readyState < 1) return;
   const dur = el.duration || 1;
   const clamped = Math.max(0, Math.min(dur - 0.03, t));
-  if (Math.abs(el.currentTime - clamped) > 0.008) {
-    el.currentTime = clamped;
+  // Skip micro-moves smaller than ~1 frame duration (30fps) to avoid decoder backpressure
+  if (Math.abs(el.currentTime - clamped) > 0.02) {
+    if ("fastSeek" in el && typeof (el as unknown as { fastSeek: (time: number) => void }).fastSeek === "function") {
+      (el as unknown as { fastSeek: (time: number) => void }).fastSeek(clamped);
+    } else {
+      el.currentTime = clamped;
+    }
   }
 }

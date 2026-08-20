@@ -42,10 +42,10 @@ export default function CinematicCanvas() {
       {/* deep void dust */}
       <ParticleField
         mode="dust"
-        count={7000}
+        count={2800}
         colorA="#00ff9c"
         colorB="#9dffd6"
-        size={4.6}
+        size={5.5}
         spread={[38, 22, 18]}
         drift={1}
         mouseStrength={1.2}
@@ -56,10 +56,10 @@ export default function CinematicCanvas() {
       {/* embers drifting in front — atmosphere over the footage */}
       <ParticleField
         mode="ember"
-        count={1600}
+        count={600}
         colorA="#12b877"
         colorB="#d7ffef"
-        size={6}
+        size={7.2}
         spread={[26, 20, 9]}
         rise={1.5}
         drift={0.6}

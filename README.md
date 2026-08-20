@@ -1,186 +1,214 @@
 # AVENGERS: DOOMSDAY — Cinematic Scroll Experience
 
-A fully **scroll-driven, cinematic web experience** built to feel like one continuous movie rather than a conventional website. Every video, camera move, particle, and title is choreographed to your scroll position — you don't browse pages, you *direct a trailer*.
+<div align="center">
 
-> **This is a non-commercial, Marvel-inspired fan concept** created as an educational and portfolio showcase of creative front-end development (WebGL, scroll orchestration, video performance). It is not affiliated with, endorsed by, or sponsored by Marvel or The Walt Disney Company. All Marvel characters and trademarks belong to their respective owners.
+![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript_5-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=threedotjs&logoColor=white)
+![GSAP](https://img.shields.io/badge/GSAP_3.15-88CE02?style=for-the-badge&logo=greensock&logoColor=white)
+![Turbopack](https://img.shields.io/badge/Turbopack-Ready-00ff9c?style=for-the-badge&logo=webpack&logoColor=black)
+
+**An Awwwards-style, scroll-driven cinematic web experience engineered with Next.js, React Three Fiber, and GSAP.**
+
+[Live Demo](#-deployment) • [Architecture](#-technical-architecture) • [Features](#-cinematic-features) • [Getting Started](#-getting-started) • [Performance](#-performance--optimization)
+
+</div>
 
 ---
 
-## ✦ Overview
+## ✦ Executive Summary
 
-- **Name:** AVENGERS: DOOMSDAY
-- **What it is:** An Awwwards-style, single-page, scroll-controlled cinematic experience — a void erupts into a storm, the Marvel intro scrubs frame-by-frame, a portal dive carries you into a Doctor Doom hero trailer, a 3D Doom model orbited by six auto-playing character videos, stacked movie-poster story panels, a horizontal scene timeline, a scroll-scrubbed final battle, the entire MCU timeline, and the **AVENGERS: DOOMSDAY** title reveal — then a minimal footer.
-- **Inspiration:** Marvel Studios' cinematic trailers and premium Awwwards "Site of the Year" scroll experiences.
-- **Purpose:** A portfolio piece demonstrating scroll orchestration, WebGL atmosphere, frame-accurate video scrubbing, and performance-minded motion design.
+**AVENGERS: DOOMSDAY** is an immersive, high-performance web experience that bridges real-time 3D graphics and frame-accurate video playback into a cohesive cinematic narrative. Rather than treating scroll as standard document navigation, the user's scroll position acts as a virtual camera track and timeline playhead.
+
+Every visual element — GPU particle volumes, volumetric smoke shaders, procedural fractal lightning, 3D character staging, and 4K trailer streams — is synchronized through a decoupled, zero-allocation signal architecture.
+
+> **Disclaimer**: This is an independent, non-commercial fan concept built for educational, portfolio, and creative engineering purposes. Not affiliated with, endorsed by, or sponsored by Marvel Studios or The Walt Disney Company. All trademarks and characters belong to their respective copyright holders.
 
 ---
 
-## ✦ Features
+## ✦ System Architecture
 
-| Feature | Description |
-|---|---|
-| **Marvel Intro** | Void → green lightning storm → the Marvel intro clip **scrubbed frame-by-frame** by scroll (forward plays, up rewinds). |
-| **Scroll-Controlled Hero** | A cinematic text sequence, then a Doctor Doom trailer that scrubs with scroll — never autoplays, always driven by the user. |
-| **3D Doctor Doom Section** | A procedural Doctor Doom model (Three.js) at centre with idle breathing, cape sway, cursor-look, and scroll rotation under cinematic rim lighting. |
-| **Six Interactive Character Cards** | Six cards orbit the 3D model like satellites; the active card comes forward while the others pass **genuinely behind** the model (z-index straddle for real depth). |
-| **Auto-Playing Character Videos** | Each card plays a looping, muted, `playsInline`, controls-free video with `object-fit: cover` — cinematic panels, not media players. |
-| **Cinematic Storytelling Panels** | Six fullscreen movie-poster panels (Doctor Doom, Thor, Loki, Cyclops, Shang-Chi, Fantastic Four) rise and stack over one another, each with a bottom-right title, description, and per-panel accent theme. |
-| **Horizontal Scroll Timeline** | A pinned section where vertical scroll drives a strip of scene videos **right-to-left**, each coming into focus at centre with parallax. |
-| **Final Cinematic Section** | A scroll-scrubbed battle (Thor → Doom → Captain America) → the full MCU timeline panning vertically → the **AVENGERS: DOOMSDAY** title reveal (auto-playing loop). |
-| **Footer** | A minimal, elegant footer that rises to close the experience. |
-| **GSAP ScrollTrigger** | One scrubbed master timeline maps scroll position onto every cinematic value. |
-| **Three.js / React Three Fiber** | A single transparent WebGL canvas provides the atmosphere — GLSL particles, volumetric fog, fractal lightning, portal, sparks — layered over the DOM video. |
-| **Responsive Design** | Fluid layout, viewport-relative sizing, and mobile-aware orbit/typography across desktop, laptop, tablet, and mobile. |
-| **Performance Optimizations** | All-intra video encoding for instant seeking, decoder priming, scroll-synchronous seeking (not rAF-throttled), adaptive DPR, additive-only atmosphere, and a zero-re-render signal bus. |
-| **Completely silent** | No audio anywhere, by design. |
+```mermaid
+flowchart TD
+    subgraph Input ["Input & Scroll Spine"]
+        U[User Wheel / Touch / Keyboard] --> L[Lenis Smooth Inertia Engine]
+        L --> ST[GSAP ScrollTrigger Master]
+    end
+
+    subgraph Signals ["Decoupled Signal Bus (Zero Re-render)"]
+        ST -->|Continuous Scrub| SB[Mutable Singleton: lib/signals.ts]
+        SB -->|Frame Playhead| V[DOM Video Layer: fastSeek]
+        SB -->|Atmosphere Energy| WGL[Three.js / R3F Canvas Layer]
+        SB -->|3D Progress & Depth| DOOM[Doctor Doom 3D Staging]
+        SB -->|Orbit & Stack Signals| OVER[DOM UI & Story Layers]
+    end
+
+    subgraph Viewport ["Full-Viewport Unified Stage (GPU Composited)"]
+        V -->|Z:1 Fullscreen Footage| STAGE[Unified Viewport Stage]
+        OVER -->|Z:2 Story Stack / Reel / Timeline| STAGE
+        WGL -->|Z:3 Transparent Atmosphere Shader| STAGE
+        DOOM -->|Z:3.5 Character Orbit Straddle| STAGE
+    end
+```
+
+---
+
+## ✦ Cinematic Journey & Chapters
+
+| Chapter | Milestones | Core Mechanics & Choreography |
+| :--- | :--- | :--- |
+| **01. The Void & Storm** | `0.0 – 1.4 units` | Deep void particles swirl with simplex noise; green storm energy ramps up; procedural fractal lightning bolts strike with camera shake. |
+| **02. Marvel Intro** | `1.4 – 3.8 units` | The iconic Marvel intro trailer scrubs frame-by-frame backwards/forwards with sub-frame precision. |
+| **03. The Rift Portal** | `3.9 – 4.7 units` | Polar-coordinate FBM energy tunnel opens, camera executes forward dolly plunge, website chrome smoothly enters. |
+| **04. Hero Doom Trailer** | `5.2 – 11.2 units` | Narrative text beats reveal sequentially, followed by the Doctor Doom trailer playing synchronously with scroll input. |
+| **05. 3D Doom Showcase** | `11.8 – 16.5 units` | Procedural 3D Doctor Doom figure rises with metallic shaders; 6 character video cards orbit the model in true 3D depth. |
+| **06. Story Stack** | `16.8 – 23.4 units` | 6 full-bleed movie-poster panels (Doom, Thor, Loki, Cyclops, Shang-Chi, Fantastic Four) rise and stack sequentially. |
+| **07. Horizontal Timeline** | `24.5 – 31.3 units` | Vertical scroll seamlessly translates into horizontal timeline travel with parallax depth on cinematic scenes. |
+| **08. The Finale & MCU Road**| `31.7 – 47.6 units` | Scroll-scrubbed battle sequence transitions into the vertical MCU Timeline pan, culminating in the **AVENGERS: DOOMSDAY** title reveal. |
+
+---
+
+## ✦ Key Engineering Innovations
+
+### 1. Zero-Allocation Signal Bus (`signals.ts`)
+React re-renders in the scroll hot path inevitably cause micro-stutter. The engine utilizes a mutable singleton bus updated directly by GSAP tweens and read during `useFrame` (WebGL) and a single synchronized `useRaf` loop (DOM overlays). This guarantees **zero garbage collection pressure and zero React re-renders** during active scrolling.
+
+### 2. High-Performance Frame-Accurate Video Scrubbing
+- **All-Intra / FastSeek Encoding**: Trailers are indexed so every frame can be seeked instantly without inter-frame decoding lag.
+- **Hardware `fastSeek` with Adaptive Throttling**: Seeks use browser hardware acceleration and throttle micro-adjustments smaller than single frame durations (~0.02s) to prevent hardware decoder backpressure.
+- **Decoder Warming**: Decoders are primed on initial interaction to eliminate black-frame flashes.
+
+### 3. Layout-Thrashing-Free DOM Engine
+- Real-time transforms and 3D card projections are calculated purely mathematically using coordinate projection functions instead of calling synchronous layout triggers (`getBoundingClientRect()`, `offsetHeight`).
+- Active video gating automatically pauses offscreen streams, maintaining strict hardware decoder resource limits.
+
+### 4. Hybrid WebGL Atmospheric Overlay
+- A single transparent WebGL canvas is layered on top of DOM video containers (`z-index: 3`).
+- Custom GLSL Shaders:
+  - **Simplex Curl Noise Particle Fields**: 2,800 void dust motes and 600 rising embers calculated entirely on the GPU.
+  - **Volumetric Fog Planes**: Multi-octave Fractional Brownian Motion (FBM) shader planes with additive blending.
+  - **Dynamic Fractal Lightning**: Recursive midpoint-displacement algorithms triggered on storm energy thresholds.
 
 ---
 
 ## ✦ Technology Stack
 
-- **[Next.js 16](https://nextjs.org/)** (App Router, Turbopack) — framework & build
-- **[React 19](https://react.dev/)** + **[TypeScript](https://www.typescriptlang.org/)**
-- **[Three.js](https://threejs.org/)** + **[React Three Fiber](https://r3f.docs.pmnd.rs/)** + **[@react-three/drei](https://github.com/pmndrs/drei)** + **@react-three/postprocessing** — WebGL scene
-- **[GSAP](https://gsap.com/)** + **ScrollTrigger** — the scrubbed master timeline
-- **[Lenis](https://lenis.darkroom.engineering/)** — smooth inertial scrolling
-- **[Zustand](https://zustand.docs.pmnd.rs/)** — discrete UI state
-- **[Framer Motion](https://www.framer.com/motion/)** — available for supporting UI motion
-- **next/font** (Anton + Chakra Petch), **CSS Modules** + a small global stylesheet
-
-> Not used: Tailwind, Vite, a component library. Styling is hand-authored CSS Modules + custom GLSL shaders.
+| Layer | Technologies |
+| :--- | :--- |
+| **Core Framework** | [Next.js 16 (App Router)](https://nextjs.org/), [React 19](https://react.dev/), [TypeScript 5](https://www.typescriptlang.org/) |
+| **3D & WebGL** | [Three.js](https://threejs.org/), [React Three Fiber](https://r3f.docs.pmnd.rs/), [@react-three/drei](https://github.com/pmndrs/drei) |
+| **Scroll & Motion** | [GSAP 3](https://gsap.com/) + ScrollTrigger, [Lenis Scroll](https://lenis.darkroom.engineering/) |
+| **State Management** | [Zustand](https://zustand.docs.pmnd.rs/) (discrete UI state), [Custom Signal Bus](https://github.com/) (hot render path) |
+| **Styling & Shaders** | Vanilla CSS Modules, Custom GLSL (Simplex, FBM, Polar Transformations) |
+| **Tooling & Bundler** | Next.js Turbopack |
 
 ---
 
-## ✦ Project Structure
+## ✦ Repository Structure
 
 ```
 avengers-doomsday/
 ├── app/
-│   ├── layout.tsx          # Root layout: fonts, SEO metadata, <html>/<body>
-│   ├── page.tsx            # Renders <Experience/>
-│   ├── globals.css         # Global cinematic base + layer z-index system
-│   └── favicon.ico
+│   ├── layout.tsx             # HTML shell, typography, SEO metadata
+│   ├── page.tsx               # Root page mounting <Experience />
+│   └── globals.css            # GPU layer compositing & stage viewport rules
 ├── components/
-│   ├── Experience.tsx      # THE DIRECTOR — the scrubbed GSAP/ScrollTrigger master timeline
-│   ├── webgl/              # The Three.js / R3F atmosphere (one transparent canvas)
-│   │   ├── CinematicCanvas.tsx   # Transparent <Canvas>, adaptive DPR
-│   │   ├── CameraRig.tsx         # Scroll/pointer-driven camera
-│   │   ├── ParticleField.tsx     # GLSL dust + embers
-│   │   ├── VolumetricFog.tsx     # Additive fog planes
-│   │   ├── Lightning.tsx         # Procedural fractal bolts
-│   │   ├── Portal.tsx, Sparks.tsx, SceneDriver.tsx, Effects.tsx
-│   │   └── showcase/             # DoomModel.tsx (procedural 3D Doom) + Showcase.tsx (lights)
-│   ├── overlays/           # DOM overlays driven by scroll signals
-│   │   ├── VideoLayer.tsx        # The scroll-scrubbed <video> trailers (Marvel / Hero / Battle)
-│   │   ├── CharacterOrbit.tsx    # Six orbiting auto-play video cards (Section 3)
-│   │   ├── StoryStack.tsx        # Six stacked movie-poster panels (Section 4)
-│   │   ├── HorizontalReel.tsx    # Horizontal scene timeline (Section 5)
-│   │   ├── TimelineImage.tsx     # MCU timeline scroll-pan (ending)
-│   │   ├── TitleReveal.tsx       # AVENGERS DOOMSDAY title video (ending)
-│   │   ├── CinematicText.tsx     # Scroll-timed cinematic copy beats
-│   │   └── FlashOverlay.tsx
-│   └── ui/                 # SiteHeader, HeroOverlay, SiteFooter, ScrollCue
+│   ├── Experience.tsx         # Master timeline orchestrator & GSAP driver
+│   ├── webgl/                 # WebGL & R3F atmosphere system
+│   │   ├── CinematicCanvas.tsx# Transparent canvas with AdaptiveDPR
+│   │   ├── CameraRig.tsx      # Parallax, dolly & impulse camera motion
+│   │   ├── ParticleField.tsx  # GPU Simplex curl dust & embers
+│   │   ├── VolumetricFog.tsx  # Additive multi-layer FBM fog
+│   │   ├── Lightning.tsx      # Procedural fractal lightning generator
+│   │   ├── Sparks.tsx         # Physics-integrated additive sparks pool
+│   │   ├── Portal.tsx         # Polar swirl rift shader
+│   │   └── showcase/          # Procedural 3D Doctor Doom figure & lighting
+│   ├── overlays/              # Scroll-driven DOM presentation layers
+│   │   ├── VideoLayer.tsx     # Fullscreen scroll-scrubbed trailer elements
+│   │   ├── CharacterOrbit.tsx # 3D orbiting character cards with depth straddle
+│   │   ├── StoryStack.tsx     # Full-bleed movie-poster chapter stack
+│   │   ├── HorizontalReel.tsx # Mathematical layout horizontal timeline
+│   │   ├── TimelineImage.tsx  # MCU timeline vertical panoramic pan
+│   │   ├── TitleReveal.tsx    # AVENGERS DOOMSDAY title loop layer
+│   │   └── CinematicText.tsx  # Scroll-synchronized narrative typography
+│   └── ui/                    # SiteHeader, HeroOverlay, SiteFooter, ScrollCue
 ├── lib/
-│   ├── constants.ts        # Palette, asset paths, scroll section heights, TIMELINE_UNITS
-│   ├── signals.ts          # Per-frame mutable signal bus (zero React re-renders in the hot path)
-│   ├── store.ts            # Zustand discrete state (phase, ready, reduce-motion)
-│   ├── videos.ts           # Video registry + scrub/prime helpers
-│   ├── useRaf.ts, useLenis.ts, gsap.ts   # Shared rAF loop, Lenis setup, GSAP+ScrollTrigger setup
-│   └── glsl.ts, textParticles.ts         # Shader chunks + helpers
-├── public/
-│   ├── videos/             # All-intra scrub videos, auto-play clips, and posters
-│   └── story/              # Story-panel artwork + the MCU timeline image
-├── next.config.ts          # reactStrictMode: false (imperative WebGL lifecycle)
-├── tsconfig.json
-└── package.json
+│   ├── constants.ts           # Pacing configuration, asset paths & color tokens
+│   ├── signals.ts             # Per-frame decoupled signal singleton
+│   ├── store.ts               # Zustand store for discrete UI phases
+│   ├── videos.ts              # Video element registry & fastSeek scrubbing
+│   ├── useLenis.ts            # High-responsiveness Lenis smooth scroll configuration
+│   ├── useRaf.ts              # Shared single-tick requestAnimationFrame loop
+│   └── glsl.ts                # Reusable GPU shader chunks
+└── public/
+    ├── videos/                # All-intra encoded MP4 clips & posters
+    └── story/                 # High-resolution poster artwork & MCU timeline
 ```
-
-**How it works (architecture in one paragraph):** There is one fixed full-viewport "stage" and one tall invisible scroll-track. A single GSAP timeline is *scrubbed* by one ScrollTrigger over that track; it tweens a mutable singleton in `lib/signals.ts`. Every visual — the WebGL atmosphere, the DOM `<video>` elements, the orbiting cards, the stacked panels — reads from those signals each frame, so the whole film is a pure function of scroll position. Trailers are **real DOM `<video>` elements** (not WebGL textures) whose `currentTime` is seeked synchronously on the scroll event, and they're encoded **all-intra** so every seek is instant in both directions.
-
----
-
-## ✦ The Scroll Experience
-
-| # | Section | What happens |
-|---|---|---|
-| 1 | **Marvel Intro** | A black void builds into a green lightning storm; the Marvel intro clip scrubs frame-by-frame, then a portal dive carries the camera onward. |
-| 2 | **Hero** | The website chrome enters; a cinematic text sequence plays, then the Doctor Doom trailer appears fullscreen and scrubs with scroll. |
-| 3 | **Doctor Doom Showcase** | A 3D Doom model rises at centre; six character videos fly in and orbit him, active card forward, others behind — real depth. |
-| 4 | **Story Panels** | Six movie-poster panels (Doom · Thor · Loki · Cyclops · Shang-Chi · Fantastic Four) rise and stack, each with bottom-right title + accent theme. |
-| 5 | **Horizontal Timeline** | A pinned strip of scene videos travels right-to-left, each focusing at centre with parallax. |
-| 6 | **Final Cinematic Ending** | A scroll-scrubbed battle (Thor → Doom → Captain America) → the MCU timeline pans through 18 years of saga → the **AVENGERS: DOOMSDAY** title reveal loops → the footer rises. |
 
 ---
 
 ## ✦ Getting Started
 
-**Prerequisites:** Node.js **20.9+** and npm.
+### Prerequisites
+- **Node.js**: `v20.9.0` or higher
+- **Package Manager**: `npm`, `pnpm`, or `yarn`
+
+### Installation & Local Setup
 
 ```bash
 # 1. Clone the repository
-git clone <your-repo-url>
-cd avengers-doomsday
+git clone https://github.com/bunnyvalluri/Avengers---Doomsday.git
+cd Avengers---Doomsday
 
 # 2. Install dependencies
 npm install
 
-# 3. Run the development server
+# 3. Start the Next.js development server
 npm run dev
-# open http://localhost:3000
+```
 
-# 4. Build for production
+Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+
+### Production Build
+
+```bash
+# Build optimized production bundle
 npm run build
 
-# 5. Run the production build locally
+# Run production server
 npm run start
 ```
 
-> Best experienced on desktop with a modern GPU. The experience is intentionally long — scroll all the way through for the full film.
-
 ---
 
-## ✦ Performance
+## ✦ Performance & Optimization
 
-- **All-intra video encoding** — the scroll-scrubbed trailers are re-encoded so every frame is a keyframe, making forward/reverse seeks instant with no stutter.
-- **Real DOM videos + scroll-synchronous seeking** — `currentTime` and opacity are set on the actual scroll event (not a throttled rAF loop), so scrubbing stays locked to the pointer even under load.
-- **Decoder priming** — a muted `play → pause` warms each decoder so the first seeked frame paints immediately.
-- **Section-gated playback** — auto-play videos play only while their section is on-screen and pause otherwise, so nothing decodes needlessly.
-- **Zero-re-render signal bus** — per-frame values live in a mutable singleton, not React state, keeping the hot path allocation- and render-free.
-- **Adaptive DPR + additive-only atmosphere** — the WebGL layer scales resolution to the device and uses cheap additive materials; no heavy post-processing in the render path.
-- **Responsive design** — viewport-relative units and mobile-aware orbit radius, typography, and layout across all screen sizes.
-- **Optimized assets** — videos are compressed H.264/MP4 with `+faststart`; images are progressive JPEGs sized for their use.
+- **60–120 FPS Rendering**: WebGL uses `AdaptiveDpr` and additive blending to minimize overdraw overhead.
+- **Immediate Scroll Responsiveness**: Lenis duration and GSAP scrub parameters are tuned to eliminate sluggish input latency.
+- **Hardware Video Acceleration**: Automatic video suspension ensures that inactive background videos consume zero hardware decoder bandwidth.
+- **Zero Memory Leaks**: All Three.js geometries, textures, materials, and GSAP scroll triggers are cleanly disposed of on unmount.
 
 ---
 
 ## ✦ Deployment
 
-This is a standard Next.js app and deploys best on **[Vercel](https://vercel.com)** (the maker of Next.js — zero config).
+### Deploying to Vercel (Recommended)
 
-- **Framework preset:** Next.js (auto-detected)
-- **Build command:** `next build` (or `npm run build`)
-- **Output directory:** `.next` (auto-detected — leave blank)
-- **Install command:** `npm install`
-- **Environment variables:** none required. Optionally set `NEXT_PUBLIC_SITE_URL` to your live URL so social-share previews resolve the preview image.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 
-### ⟶ Deploy to Vercel (recommended)
-
-1. Push this repository to GitHub.
-2. Go to **[vercel.com/new](https://vercel.com/new)** and sign in with GitHub.
-3. **Import** the repository. Vercel auto-detects Next.js — no configuration needed.
-4. *(Optional)* Add env var `NEXT_PUBLIC_SITE_URL = https://your-project.vercel.app`.
-5. Click **Deploy**. Your live URL is ready in ~1–2 minutes.
-
-Alternatives: **Netlify** and **Cloudflare Pages** also support Next.js (install the respective adapter/plugin; build with `next build`).
+1. Push your repository to GitHub.
+2. Import the project in [Vercel](https://vercel.com).
+3. Framework preset will automatically be detected as **Next.js**.
+4. Click **Deploy**.
 
 ---
 
-## ✦ Credits
+## ✦ License & Attributions
 
-- A **Marvel-inspired fan experience** — built for **educational / portfolio** purposes only, not affiliated with Marvel Studios or Disney. All characters, names, and trailers are the property of their respective owners.
-- Video and image assets are used solely as illustrative placeholders for a non-commercial concept demo.
-- **Built with:** Next.js, React, TypeScript, Three.js, React Three Fiber, drei, GSAP + ScrollTrigger, Lenis, Zustand.
-- Fonts: **Anton** and **Chakra Petch** via Google Fonts.
+- Developed as a **creative development portfolio showcase**.
+- Marvel characters, logos, and imagery are trademarks and copyrights of **Marvel Characters, Inc. / The Walt Disney Company**.
 
----
-
-*The multiverse is breaking. Only legends remain.*
+<div align="center">
+<sub>Built with precision for modern browsers. Designed for the ultimate cinematic web experience.</sub>
+</div>

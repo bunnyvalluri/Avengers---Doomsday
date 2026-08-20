@@ -101,19 +101,23 @@ export default function HorizontalReel() {
       progressRef.current.style.transform = `scaleX(${travel.toFixed(4)})`;
     }
 
-    // per-frame focus + parallax (centres are transform-stable → read rect directly)
+    // per-frame focus + parallax computed directly from coordinates (no layout reflow)
     const cx = vw / 2;
     for (let i = 0; i < SCENES.length; i++) {
-      // the section is visible → keep every clip playing (looped, muted)
-      const v = videoRefs.current[i];
-      if (v && v.paused) v.play().catch(() => {});
-
       const f = frameRefs.current[i];
       if (!f) continue;
-      const rect = f.getBoundingClientRect();
-      const fc = rect.left + rect.width / 2;
+      
+      const fc = x + vw * (0.5 + i * 0.67);
       const off = fc - cx;
       const close = 1 - clamp01(Math.abs(off) / (vw * 0.62));
+      
+      // Keep only visible scene videos playing to preserve hardware video decoders
+      const v = videoRefs.current[i];
+      if (v) {
+        if (close > 0.05 && v.paused) v.play().catch(() => {});
+        else if (close <= 0.02 && !v.paused) v.pause();
+      }
+
       const scl = 0.82 + close * 0.2;
       const rot = clamp01((off / vw + 1) / 2) * 2 - 1; // -1..1
       f.style.transform = `perspective(1600px) rotateY(${(-rot * 7).toFixed(2)}deg) scale(${scl.toFixed(3)})`;
