@@ -101,13 +101,14 @@ export default function HorizontalReel() {
       progressRef.current.style.transform = `scaleX(${travel.toFixed(4)})`;
     }
 
-    // per-frame focus + parallax computed directly from coordinates (no layout reflow)
+    // per-frame focus + parallax computed directly from responsive coordinates (no layout reflow)
     const cx = vw / 2;
+    const step = vw < 480 ? 0.92 : vw < 768 ? 0.88 : vw < 1024 ? 0.77 : 0.67;
     for (let i = 0; i < SCENES.length; i++) {
       const f = frameRefs.current[i];
       if (!f) continue;
       
-      const fc = x + vw * (0.5 + i * 0.67);
+      const fc = x + vw * (0.5 + i * step);
       const off = fc - cx;
       const close = 1 - clamp01(Math.abs(off) / (vw * 0.62));
       

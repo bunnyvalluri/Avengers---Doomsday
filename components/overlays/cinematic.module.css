@@ -106,3 +106,39 @@
   0%, 100% { transform: translate(3px, 0); }
   50% { transform: translate(6px, -1px); }
 }
+
+@media (max-width: 1024px) {
+  .line {
+    font-size: clamp(2.2rem, 7.5vw, 6.2rem);
+  }
+  .small {
+    font-size: clamp(1.8rem, 5.5vw, 4.8rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .beat {
+    width: min(94vw, 560px);
+  }
+  .line {
+    font-size: clamp(1.9rem, 9.5vw, 3.8rem);
+    letter-spacing: 0.02em;
+  }
+  .small {
+    font-size: clamp(1.6rem, 7.5vw, 2.9rem);
+  }
+  .kicker {
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .line {
+    font-size: clamp(1.65rem, 8.5vw, 2.6rem);
+  }
+  .small {
+    font-size: clamp(1.35rem, 7vw, 2.1rem);
+  }
+}

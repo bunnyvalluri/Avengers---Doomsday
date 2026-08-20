@@ -37,9 +37,12 @@ export default function CameraRig() {
     const finFloatX = Math.sin(t * 0.09) * 0.18 * fin;
     const finFloatY = Math.cos(t * 0.11) * 0.12 * fin;
 
+    const aspect = state.size.width / Math.max(1, state.size.height);
+    const zOffset = aspect < 1 ? Math.min(3.5, (1 / aspect - 1) * 2.0) : 0;
+
     const tx = signals.mx * (0.7 + sc * 0.5 + reelAmt * 0.2) + sx + driftX + reelPan + finFloatX;
     const ty = signals.my * (0.5 + sc * 0.3) + sy + driftY + sc * 0.12 + finFloatY;
-    const tz = 6 - signals.dolly * 1.7 - sc * 1.1 - fin * 0.7;
+    const tz = 6 + zOffset - signals.dolly * 1.7 - sc * 1.1 - fin * 0.7;
 
     cam.position.x += (tx - cam.position.x) * 0.06;
     cam.position.y += (ty - cam.position.y) * 0.06;

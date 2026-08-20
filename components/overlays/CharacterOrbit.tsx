@@ -97,8 +97,10 @@ export default function CharacterOrbit() {
     }
 
     const wantPlay = s > 0.01 && s < 0.98;
-    const Rx = vw * 0.3; // horizontal orbit radius
-    const Ry = vh * 0.15; // vertical tilt (front lower, back higher)
+    const isMobile = vw < 768;
+    const isTablet = vw >= 768 && vw < 1024;
+    const Rx = isMobile ? vw * 0.35 : isTablet ? vw * 0.33 : vw * 0.3; // horizontal orbit radius
+    const Ry = isMobile ? vh * 0.11 : isTablet ? vh * 0.13 : vh * 0.15; // vertical tilt
     const base = s * TAU * 0.85 + t * 0.045; // scroll rotates the ring + slow idle
     const N = CHARACTERS.length;
 

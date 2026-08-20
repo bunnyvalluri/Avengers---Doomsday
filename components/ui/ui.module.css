@@ -217,69 +217,63 @@
   transform: translateY(-1px);
   box-shadow: 0 0 34px rgba(0, 255, 156, 0.6);
 }
-@media (max-width: 720px) {
+@media (max-width: 768px) {
   .nav { display: none; }
+  .header {
+    padding: 0.85rem 1.2rem;
+  }
+  .cta {
+    padding: 0.55rem 1rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.16em;
+  }
+  .brandText {
+    font-size: 0.68rem;
+    letter-spacing: 0.24em;
+  }
+  .heroUi {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1.2rem 1.2rem 1.5rem;
+  }
+  .heroScrub {
+    align-items: flex-start;
+    min-width: min(84vw, 280px);
+  }
+  .scrubTrack {
+    width: min(84vw, 280px);
+  }
 }
 
-/* ── Hero content chrome + scrub bar ─────────────────────────────── */
-.heroUi {
-  position: fixed;
-  inset: auto 0 0 0;
-  z-index: 11;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1.5rem;
-  padding: clamp(1.2rem, 4vw, 3rem) clamp(1.1rem, 4vw, 3rem) clamp(1.6rem, 4vw, 3rem);
-  pointer-events: none;
-  will-change: opacity;
-}
-.heroText {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.heroKicker {
-  font-size: 0.66rem;
-  letter-spacing: 0.4em;
-  text-transform: uppercase;
-  color: var(--green);
-}
-.heroLine {
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  font-size: clamp(1.6rem, 4.5vw, 3.4rem);
-  line-height: 0.95;
-  letter-spacing: 0.02em;
-  color: var(--white);
-  text-shadow: 0 0 24px rgba(0, 255, 156, 0.35);
-}
-.heroScrub {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.6rem;
-  min-width: min(38vw, 320px);
-}
-.heroScrubLabel {
-  font-size: 0.62rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--silver);
-  opacity: 0.85;
-}
-.scrubTrack {
-  width: min(38vw, 320px);
-  height: 2px;
-  background: rgba(0, 255, 156, 0.18);
-  overflow: hidden;
-}
-.scrubFill {
-  display: block;
-  width: 100%;
-  height: 100%;
-  transform: scaleX(0);
-  transform-origin: left;
-  background: linear-gradient(90deg, var(--green), var(--mint));
-  box-shadow: 0 0 10px rgba(0, 255, 156, 0.8);
+@media (max-width: 480px) {
+  .header {
+    padding: 0.7rem 0.9rem;
+  }
+  .mark {
+    width: 13px;
+    height: 13px;
+  }
+  .brandText {
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+  }
+  .cta {
+    padding: 0.48rem 0.85rem;
+    font-size: 0.62rem;
+  }
+  .heroUi {
+    padding: 1rem 1rem 1.2rem;
+  }
+  .heroKicker {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+  }
+  .heroScrubLabel {
+    font-size: 0.58rem;
+  }
+  .scrollCue .label {
+    font-size: 0.58rem;
+    letter-spacing: 0.35em;
+  }
 }
