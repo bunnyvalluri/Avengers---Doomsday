@@ -16,12 +16,20 @@ const smoothstep = (a: number, b: number, x: number) => {
   return t * t * (3 - 2 * t);
 };
 
-const NAV = ["Overview", "Characters", "Story", "Timeline"];
-const SOCIAL = ["Instagram", "X", "YouTube"];
+import { useExperience } from "@/lib/store";
+import { CHAPTERS_NAV } from "@/lib/constants";
+
+const NAV = [
+  { name: "Overview", chapterIndex: 1 },
+  { name: "Heroes", chapterIndex: 2 },
+  { name: "Story", chapterIndex: 3 },
+  { name: "Timeline", chapterIndex: 4 },
+];
 
 export default function SiteFooter() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const footRef = useRef<HTMLElement>(null);
+  const setTicketOpen = useExperience((s) => s.setTicketModalOpen);
 
   useRaf(() => {
     const foot = signals.footer;
@@ -38,7 +46,18 @@ export default function SiteFooter() {
     }
   });
 
-  const noop = (e: React.MouseEvent) => e.preventDefault();
+  const jumpTo = (chapterIndex: number) => {
+    const progress = CHAPTERS_NAV[chapterIndex]?.progress ?? 0;
+    const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const targetY = progress * totalHeight;
+
+    const lenis = (window as unknown as { __lenis?: { scrollTo: (y: number, opts: { duration: number }) => void } }).__lenis;
+    if (lenis && typeof lenis.scrollTo === "function") {
+      lenis.scrollTo(targetY, { duration: 1.4 });
+    } else {
+      window.scrollTo({ top: targetY, behavior: "smooth" });
+    }
+  };
 
   return (
     <div className={styles.wrap} ref={wrapRef} style={{ visibility: "hidden" }}>
@@ -46,31 +65,85 @@ export default function SiteFooter() {
         <span className={styles.glow} />
         <div className={styles.inner}>
           <div className={styles.brand}>
-            <span className={styles.mark}>
+            <span className={styles.mark} onClick={() => jumpTo(0)} style={{ cursor: "pointer" }}>
               Doomsday<span>.</span>
             </span>
             <span className={styles.tag}>A scroll-driven cinematic concept experience.</span>
+            <div style={{ marginTop: "8px" }}>
+              <button
+                type="button"
+                className={styles.cta}
+                onClick={() => setTicketOpen(true)}
+                style={{
+                  background: "linear-gradient(120deg, var(--green), var(--mint))",
+                  border: "none",
+                  padding: "8px 16px",
+                  borderRadius: "4px",
+                  color: "#03140d",
+                  fontFamily: "var(--font-ui)",
+                  fontWeight: 700,
+                  fontSize: "11px",
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  cursor: "pointer",
+                }}
+              >
+                Get Tickets
+              </button>
+            </div>
           </div>
 
           <nav>
-            <div className={styles.colHead}>Explore</div>
+            <div className={styles.colHead}>Explore Chapters</div>
             <div className={styles.links}>
               {NAV.map((l) => (
-                <a key={l} href="#" onClick={noop}>
-                  {l}
-                </a>
+                <button
+                  key={l.name}
+                  type="button"
+                  onClick={() => jumpTo(l.chapterIndex)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "rgba(224, 244, 236, 0.72)",
+                    fontFamily: "var(--font-ui)",
+                    fontSize: "13px",
+                    letterSpacing: "0.12em",
+                    cursor: "pointer",
+                    textAlign: "left",
+                    padding: 0,
+                  }}
+                >
+                  {l.name}
+                </button>
               ))}
+              <button
+                type="button"
+                onClick={() => jumpTo(0)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--green)",
+                  fontFamily: "var(--font-ui)",
+                  fontSize: "13px",
+                  letterSpacing: "0.12em",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  padding: 0,
+                  marginTop: "4px",
+                }}
+              >
+                ↺ Replay Experience
+              </button>
             </div>
           </nav>
 
           <div>
-            <div className={styles.colHead}>Follow</div>
-            <div className={styles.social}>
-              {SOCIAL.map((l) => (
-                <a key={l} href="#" onClick={noop}>
-                  {l}
-                </a>
-              ))}
+            <div className={styles.colHead}>Experience Formats</div>
+            <div className={styles.links}>
+              <span style={{ fontSize: "12.5px", color: "rgba(224, 244, 236, 0.6)" }}>IMAX 3D with Laser</span>
+              <span style={{ fontSize: "12.5px", color: "rgba(224, 244, 236, 0.6)" }}>Dolby Cinema Atmos</span>
+              <span style={{ fontSize: "12.5px", color: "rgba(224, 244, 236, 0.6)" }}>4DX Multi-Sensory</span>
+              <span style={{ fontSize: "12.5px", color: "rgba(224, 244, 236, 0.6)" }}>ScreenX 270°</span>
             </div>
           </div>
         </div>

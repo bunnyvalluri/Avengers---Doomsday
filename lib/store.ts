@@ -11,13 +11,19 @@ import type { Phase } from "./constants";
 interface ExperienceState {
   phase: Phase;
   ready: boolean;
-  started: boolean; // first user gesture (used to (re)prime the video decoders)
+  started: boolean;
   reduceMotion: boolean;
+  ticketModalOpen: boolean;
+  audioEnabled: boolean;
+  activeChapter: number;
 
   setPhase: (p: Phase) => void;
   setReady: (v: boolean) => void;
   start: () => void;
   setReduceMotion: (v: boolean) => void;
+  setTicketModalOpen: (open: boolean) => void;
+  setAudioEnabled: (enabled: boolean) => void;
+  setActiveChapter: (chapter: number) => void;
 }
 
 export const useExperience = create<ExperienceState>((set) => ({
@@ -25,11 +31,17 @@ export const useExperience = create<ExperienceState>((set) => ({
   ready: false,
   started: false,
   reduceMotion: false,
+  ticketModalOpen: false,
+  audioEnabled: false,
+  activeChapter: 0,
 
   setPhase: (phase) => set({ phase }),
   setReady: (ready) => set({ ready }),
   start: () => set({ started: true }),
   setReduceMotion: (reduceMotion) => set({ reduceMotion }),
+  setTicketModalOpen: (ticketModalOpen) => set({ ticketModalOpen }),
+  setAudioEnabled: (audioEnabled) => set({ audioEnabled }),
+  setActiveChapter: (activeChapter) => set({ activeChapter }),
 }));
 
 export const experience = useExperience;

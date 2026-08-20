@@ -21,6 +21,10 @@ import ScrollCue from "@/components/ui/ScrollCue";
 import SiteHeader from "@/components/ui/SiteHeader";
 import HeroOverlay from "@/components/ui/HeroOverlay";
 import SiteFooter from "@/components/ui/SiteFooter";
+import ChapterNav from "@/components/ui/ChapterNav";
+import AudioControl from "@/components/ui/AudioControl";
+import TicketModal from "@/components/ui/TicketModal";
+import { CHAPTERS_NAV } from "@/lib/constants";
 
 // Master timeline positions (arbitrary units; ScrollTrigger scrubs scroll→time).
 // Matches the SCROLL section heights (vh/100) so the scrub feels even.
@@ -89,8 +93,33 @@ export default function Experience() {
     const rm = window.matchMedia?.("(prefers-reduced-motion: reduce)");
     if (rm?.matches) useExperience.getState().setReduceMotion(true);
 
+    const onKeyNav = (e: KeyboardEvent) => {
+      if (document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "TEXTAREA") return;
+      if (e.key === "ArrowDown" || e.code === "KeyJ" || e.key === "PageDown") {
+        const s = signals.scroll;
+        const next = CHAPTERS_NAV.find((ch) => ch.progress > s + 0.03) ?? CHAPTERS_NAV[CHAPTERS_NAV.length - 1];
+        if (next) {
+          const totalY = (document.documentElement.scrollHeight - window.innerHeight) * next.progress;
+          const lenis = (window as unknown as { __lenis?: { scrollTo: (y: number, opts: { duration: number }) => void } }).__lenis;
+          if (lenis) lenis.scrollTo(totalY, { duration: 1.0 });
+          else window.scrollTo({ top: totalY, behavior: "smooth" });
+        }
+      } else if (e.key === "ArrowUp" || e.code === "KeyK" || e.key === "PageUp") {
+        const s = signals.scroll;
+        const prev = [...CHAPTERS_NAV].reverse().find((ch) => ch.progress < s - 0.03) ?? CHAPTERS_NAV[0];
+        if (prev) {
+          const totalY = (document.documentElement.scrollHeight - window.innerHeight) * prev.progress;
+          const lenis = (window as unknown as { __lenis?: { scrollTo: (y: number, opts: { duration: number }) => void } }).__lenis;
+          if (lenis) lenis.scrollTo(totalY, { duration: 1.0 });
+          else window.scrollTo({ top: totalY, behavior: "smooth" });
+        }
+      }
+    };
+    window.addEventListener("keydown", onKeyNav);
+
     return () => {
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("keydown", onKeyNav);
       evs.forEach((e) => window.removeEventListener(e, onGesture));
     };
   }, []);
@@ -252,6 +281,9 @@ export default function Experience() {
       <HeroOverlay />
       <SiteFooter />
       <ScrollCue />
+      <ChapterNav />
+      <AudioControl />
+      <TicketModal />
 
       {/* invisible scroll track — the distance the scrub travels over */}
       <div className="scroll-track" ref={trackRef} aria-hidden>

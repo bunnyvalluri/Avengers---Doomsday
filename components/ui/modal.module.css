@@ -1,0 +1,343 @@
+/* ============================================================
+   Premiere Ticket Modal — Interactive VIP Booking Experience
+   Preserving all Doom green, dark graphite, and mint colors.
+   ============================================================ */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 4vw, 36px);
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  position: relative;
+  width: min(92vw, 640px);
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: radial-gradient(120% 120% at 50% 0%, #061f15 0%, #020b08 60%, #000000 100%);
+  border: 1px solid rgba(0, 255, 156, 0.3);
+  border-radius: 20px;
+  box-shadow:
+    0 30px 100px -20px rgba(0, 0, 0, 0.9),
+    0 0 50px -10px rgba(0, 255, 156, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  padding: clamp(24px, 5vw, 40px);
+  color: #eafff6;
+  font-family: var(--font-ui);
+  animation: scaleUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.94) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.closeBtn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 255, 156, 0.25);
+  background: rgba(4, 20, 15, 0.6);
+  color: var(--mint);
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.closeBtn:hover {
+  background: rgba(0, 255, 156, 0.2);
+  border-color: var(--green);
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.kicker {
+  font-size: 11px;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.kicker::before {
+  content: "";
+  width: 20px;
+  height: 2px;
+  background: var(--green);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 0.95;
+  text-transform: uppercase;
+  color: #eafff6;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 20px rgba(0, 255, 156, 0.3);
+}
+
+.subtitle {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: rgba(214, 236, 226, 0.65);
+  margin-top: 6px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(0, 255, 156, 0.8);
+  margin: 20px 0 10px;
+}
+
+.formatGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.formatCard {
+  background: rgba(5, 25, 18, 0.5);
+  border: 1px solid rgba(0, 255, 156, 0.2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.formatCard:hover {
+  border-color: rgba(0, 255, 156, 0.5);
+  background: rgba(8, 38, 27, 0.6);
+  transform: translateY(-2px);
+}
+
+.formatActive {
+  border-color: var(--green) !important;
+  background: rgba(0, 255, 156, 0.15) !important;
+  box-shadow: 0 0 20px -4px rgba(0, 255, 156, 0.35);
+}
+
+.formatName {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  color: #eafff6;
+}
+
+.formatDesc {
+  font-size: 10.5px;
+  color: rgba(214, 236, 226, 0.65);
+  margin-top: 2px;
+}
+
+.dates {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.dateBtn {
+  flex: 1;
+  min-width: 80px;
+  background: rgba(5, 25, 18, 0.5);
+  border: 1px solid rgba(0, 255, 156, 0.2);
+  border-radius: 8px;
+  padding: 10px 8px;
+  cursor: pointer;
+  color: #eafff6;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.dateBtn:hover {
+  border-color: rgba(0, 255, 156, 0.5);
+}
+
+.dateActive {
+  border-color: var(--green) !important;
+  background: rgba(0, 255, 156, 0.18) !important;
+  color: #fff;
+}
+
+.dateDay {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mint);
+}
+
+.dateNum {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  margin-top: 2px;
+}
+
+.form {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.inputGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.input {
+  flex: 1;
+  background: rgba(3, 14, 10, 0.7);
+  border: 1px solid rgba(0, 255, 156, 0.25);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #eafff6;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 14px rgba(0, 255, 156, 0.3);
+}
+
+.submitBtn {
+  cursor: pointer;
+  background: linear-gradient(120deg, var(--green), var(--mint));
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  color: #03140d;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  box-shadow: 0 0 20px rgba(0, 255, 156, 0.4);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.submitBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 30px rgba(0, 255, 156, 0.7);
+}
+
+/* Success Ticket Pass state */
+.ticketPass {
+  background: linear-gradient(145deg, #062b1d 0%, #03120c 100%);
+  border: 1px dashed rgba(0, 255, 156, 0.4);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.passHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 255, 156, 0.2);
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+}
+
+.passBadge {
+  background: rgba(0, 255, 156, 0.15);
+  border: 1px solid var(--green);
+  color: var(--green);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.passCode {
+  font-family: monospace;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--mint);
+}
+
+.passDetails {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  font-size: 11px;
+}
+
+.passLabel {
+  color: rgba(214, 236, 226, 0.5);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 9.5px;
+}
+
+.passValue {
+  color: #eafff6;
+  font-weight: 600;
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.barcode {
+  display: flex;
+  gap: 3px;
+  height: 28px;
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 255, 156, 0.15);
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.barcodeBar {
+  background: rgba(0, 255, 156, 0.6);
+  height: 100%;
+}
+
+@media (max-width: 540px) {
+  .formatGrid {
+    grid-template-columns: 1fr;
+  }
+  .inputGroup {
+    flex-direction: column;
+  }
+  .submitBtn {
+    width: 100%;
+  }
+}

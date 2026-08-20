@@ -5,7 +5,15 @@ import { signals } from "@/lib/signals";
 import { useRaf } from "@/lib/useRaf";
 import styles from "./ui.module.css";
 
-const NAV = ["Overview", "Universe", "Heroes", "Trailers", "Tickets"];
+import { useExperience } from "@/lib/store";
+import { CHAPTERS_NAV } from "@/lib/constants";
+
+const NAV = [
+  { name: "Overview", chapterIndex: 1 },
+  { name: "Heroes", chapterIndex: 2 },
+  { name: "Story", chapterIndex: 3 },
+  { name: "Timeline", chapterIndex: 4 },
+];
 
 const clamp01 = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
 const smoothstep = (a: number, b: number, x: number) => {
@@ -13,15 +21,9 @@ const smoothstep = (a: number, b: number, x: number) => {
   return t * t * (3 - 2 * t);
 };
 
-/**
- * The website header + navigation. It doesn't exist during the Marvel intro —
- * it slides in as the camera exits the portal into the Hero, keyed off the
- * scroll-driven `signals.header`. It retires again as the horizontal timeline
- * begins so the cinematic back-half (reel → finale) stays immersive; the footer
- * carries the nav at the very end.
- */
 export default function SiteHeader() {
   const ref = useRef<HTMLElement>(null);
+  const setTicketOpen = useExperience((s) => s.setTicketModalOpen);
 
   useRaf(() => {
     const el = ref.current;
@@ -33,9 +35,22 @@ export default function SiteHeader() {
     el.style.visibility = h < 0.01 ? "hidden" : "visible";
   });
 
+  const jumpTo = (chapterIndex: number) => {
+    const progress = CHAPTERS_NAV[chapterIndex]?.progress ?? 0;
+    const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const targetY = progress * totalHeight;
+
+    const lenis = (window as unknown as { __lenis?: { scrollTo: (y: number, opts: { duration: number }) => void } }).__lenis;
+    if (lenis && typeof lenis.scrollTo === "function") {
+      lenis.scrollTo(targetY, { duration: 1.2 });
+    } else {
+      window.scrollTo({ top: targetY, behavior: "smooth" });
+    }
+  };
+
   return (
     <header ref={ref} className={styles.header} style={{ opacity: 0, visibility: "hidden" }}>
-      <div className={styles.brand}>
+      <div className={styles.brand} onClick={() => jumpTo(0)} style={{ cursor: "pointer" }}>
         <span className={styles.mark} aria-hidden />
         <span className={styles.brandText}>
           MARVEL<b>STUDIOS</b>
@@ -43,12 +58,18 @@ export default function SiteHeader() {
       </div>
       <nav className={styles.nav}>
         {NAV.map((n) => (
-          <a key={n} href="#" className={styles.navLink} onClick={(e) => e.preventDefault()}>
-            {n}
-          </a>
+          <button
+            key={n.name}
+            type="button"
+            className={styles.navLink}
+            onClick={() => jumpTo(n.chapterIndex)}
+            style={{ background: "transparent", border: "none", cursor: "pointer" }}
+          >
+            {n.name}
+          </button>
         ))}
       </nav>
-      <button className={styles.cta} type="button">
+      <button className={styles.cta} type="button" onClick={() => setTicketOpen(true)}>
         Get Tickets
       </button>
     </header>

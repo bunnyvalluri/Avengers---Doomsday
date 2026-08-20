@@ -93,4 +93,22 @@ export const SCROLL = {
 export const SCROLL_VH_TOTAL = Object.values(SCROLL).reduce((a, b) => a + b, 0);
 export const TIMELINE_UNITS = SCROLL_VH_TOTAL / 100;
 
+export interface ChapterInfo {
+  id: string;
+  name: string;
+  short: string;
+  progress: number;
+}
+
+export const CHAPTERS_NAV: ChapterInfo[] = [
+  { id: "intro", name: "01 · The Void", short: "Void", progress: 0.0 },
+  { id: "hero", name: "02 · Doom Arrival", short: "Hero", progress: (SCROLL.introAtmos + SCROLL.marvelScrub + SCROLL.transition) / SCROLL_VH_TOTAL },
+  { id: "showcase", name: "03 · Character Orbit", short: "Orbit", progress: (SCROLL.introAtmos + SCROLL.marvelScrub + SCROLL.transition + SCROLL.heroText + SCROLL.heroScrub + SCROLL.heroOutro) / SCROLL_VH_TOTAL },
+  { id: "story", name: "04 · Story Chapters", short: "Story", progress: (SCROLL.introAtmos + SCROLL.marvelScrub + SCROLL.transition + SCROLL.heroText + SCROLL.heroScrub + SCROLL.heroOutro + SCROLL.showcaseRise + SCROLL.showcaseOrbit + SCROLL.showcaseOut) / SCROLL_VH_TOTAL },
+  { id: "timeline", name: "05 · Timeline Reel", short: "Reel", progress: (SCROLL.introAtmos + SCROLL.marvelScrub + SCROLL.transition + SCROLL.heroText + SCROLL.heroScrub + SCROLL.heroOutro + SCROLL.showcaseRise + SCROLL.showcaseOrbit + SCROLL.showcaseOut + SCROLL.storyStack) / SCROLL_VH_TOTAL },
+  { id: "finale", name: "06 · Battle Finale", short: "Battle", progress: (SCROLL.introAtmos + SCROLL.marvelScrub + SCROLL.transition + SCROLL.heroText + SCROLL.heroScrub + SCROLL.heroOutro + SCROLL.showcaseRise + SCROLL.showcaseOrbit + SCROLL.showcaseOut + SCROLL.storyStack + SCROLL.reelStrip) / SCROLL_VH_TOTAL },
+  { id: "mcu", name: "07 · MCU Road", short: "Saga", progress: (SCROLL.introAtmos + SCROLL.marvelScrub + SCROLL.transition + SCROLL.heroText + SCROLL.heroScrub + SCROLL.heroOutro + SCROLL.showcaseRise + SCROLL.showcaseOrbit + SCROLL.showcaseOut + SCROLL.storyStack + SCROLL.reelStrip + SCROLL.finaleScrub) / SCROLL_VH_TOTAL },
+  { id: "title", name: "08 · Title Reveal", short: "Title", progress: (SCROLL.introAtmos + SCROLL.marvelScrub + SCROLL.transition + SCROLL.heroText + SCROLL.heroScrub + SCROLL.heroOutro + SCROLL.showcaseRise + SCROLL.showcaseOrbit + SCROLL.showcaseOut + SCROLL.storyStack + SCROLL.reelStrip + SCROLL.finaleScrub + SCROLL.mcuPan) / SCROLL_VH_TOTAL },
+];
+
 export type Phase = "loading" | "intro" | "hero";

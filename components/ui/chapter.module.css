@@ -1,0 +1,104 @@
+/* ============================================================
+   Chapter Navigation HUD — Interactive Cinematic Wayfinder
+   Preserving all Doom green, dark graphite, and mint colors.
+   ============================================================ */
+
+.navWrap {
+  position: fixed;
+  right: clamp(14px, 2.5vw, 32px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: auto;
+  user-select: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  padding: 4px 0;
+  cursor: pointer;
+  outline: none;
+}
+
+.label {
+  font-family: var(--font-ui);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mint);
+  opacity: 0;
+  transform: translateX(8px);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  white-space: nowrap;
+  background: rgba(3, 16, 11, 0.75);
+  border: 1px solid rgba(0, 255, 156, 0.2);
+  padding: 4px 8px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+}
+
+.item:hover .label,
+.item:focus-visible .label {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(174, 187, 181, 0.35);
+  border: 1px solid rgba(0, 255, 156, 0.2);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.item:hover .dot {
+  background: var(--mint);
+  border-color: var(--green);
+  transform: scale(1.3);
+}
+
+.active .dot {
+  width: 9px;
+  height: 9px;
+  background: var(--green) !important;
+  box-shadow: 0 0 12px 2px rgba(0, 255, 156, 0.85);
+  border-color: #fff !important;
+  transform: scale(1.2);
+}
+
+.active .label {
+  opacity: 0.85;
+  transform: translateX(0);
+  border-color: rgba(0, 255, 156, 0.5);
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .navWrap {
+    right: 8px;
+    gap: 8px;
+  }
+  .label {
+    display: none;
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+  }
+  .active .dot {
+    width: 8px;
+    height: 8px;
+  }
+}

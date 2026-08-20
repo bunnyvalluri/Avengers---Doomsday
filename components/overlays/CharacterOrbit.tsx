@@ -141,6 +141,8 @@ export default function CharacterOrbit() {
         `translate(-50%, -50%) perspective(1100px) translate3d(${(x + enterX).toFixed(1)}px, ${y.toFixed(1)}px, 0)` +
         ` rotateY(${rotY.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
       card.style.opacity = (lerp(0.32, 1, depth01) * enter).toFixed(3);
+      card.style.pointerEvents = d > 0.3 ? "auto" : "none";
+      card.style.cursor = d > 0.3 ? "pointer" : "default";
       // straddle the atmosphere/model canvas (z3): front over, back behind
       card.style.zIndex = d > 0 ? "4" : "2";
       // depth blur on the far cards
@@ -151,7 +153,7 @@ export default function CharacterOrbit() {
   });
 
   return (
-    <div className={styles.layer} aria-hidden>
+    <div className={styles.layer} aria-hidden={false}>
       {CHARACTERS.map((c, i) => (
         <div
           key={c.slug}
@@ -160,6 +162,7 @@ export default function CharacterOrbit() {
             cardRefs.current[i] = el;
           }}
           style={{ visibility: "hidden" }}
+          title={`Hero: ${c.name}`}
         >
           <video
             ref={(el) => {
