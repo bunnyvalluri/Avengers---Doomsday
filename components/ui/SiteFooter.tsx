@@ -150,8 +150,31 @@ export default function SiteFooter() {
 
         <div className={styles.rule} />
         <div className={styles.base}>
-          <span>© 2026 · Placeholder — fan concept, not affiliated with Marvel.</span>
-          <span>Built as a cinematic web experience.</span>
+          <span>
+            © 2026{" "}
+            <a
+              href="https://valluri-rahul-portfolio.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.authorLink}
+              title="Open VALLURI RAHUL Portfolio"
+            >
+              VALLURI RAHUL
+            </a>
+            . All rights reserved. Fan concept, not affiliated with Marvel.
+          </span>
+          <span>
+            Crafted by{" "}
+            <a
+              href="https://valluri-rahul-portfolio.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.authorLink}
+              title="Open VALLURI RAHUL Portfolio"
+            >
+              VALLURI RAHUL ↗
+            </a>
+          </span>
         </div>
       </footer>
     </div>

@@ -204,11 +204,13 @@ npm run start
 
 ---
 
-## ✦ License & Attributions
+## ✦ Author & Copyright
 
+- **Creator & Lead Creative Engineer**: [**VALLURI RAHUL**](https://valluri-rahul-portfolio.vercel.app)
+- **Portfolio**: [https://valluri-rahul-portfolio.vercel.app](https://valluri-rahul-portfolio.vercel.app)
 - Developed as a **creative development portfolio showcase**.
 - Marvel characters, logos, and imagery are trademarks and copyrights of **Marvel Characters, Inc. / The Walt Disney Company**.
 
 <div align="center">
-<sub>Built with precision for modern browsers. Designed for the ultimate cinematic web experience.</sub>
+<sub>© 2026 <b>VALLURI RAHUL</b>. Built with precision for modern browsers. Designed for the ultimate cinematic web experience.</sub>
 </div>

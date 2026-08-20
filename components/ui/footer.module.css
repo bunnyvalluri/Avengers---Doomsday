@@ -130,7 +130,25 @@
   font-family: var(--font-ui);
   font-size: 11px;
   letter-spacing: 0.16em;
-  color: rgba(190, 214, 205, 0.4);
+  color: rgba(190, 214, 205, 0.55);
+}
+
+.authorLink {
+  color: var(--green);
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.18em;
+  padding: 1px 4px;
+  border-radius: 2px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.authorLink:hover {
+  color: #ffffff;
+  background: rgba(0, 255, 156, 0.18);
+  text-shadow: 0 0 12px rgba(0, 255, 156, 0.85);
+  box-shadow: 0 0 12px rgba(0, 255, 156, 0.3);
 }
 
 @media (max-width: 1024px) {
