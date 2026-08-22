@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#072b1d"/>
+      <stop offset="55%" stop-color="#03140d"/>
+      <stop offset="100%" stop-color="#000503"/>
+    </radialGradient>
+
+    <!-- Doom Metallic Green Gradient -->
+    <linearGradient id="doomGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9dffd6"/>
+      <stop offset="40%" stop-color="#00ff9c"/>
+      <stop offset="80%" stop-color="#00b473"/>
+      <stop offset="100%" stop-color="#083b2a"/>
+    </linearGradient>
+
+    <!-- Chrome Silver Gradient -->
+    <linearGradient id="chromeMetal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="30%" stop-color="#d4e8de"/>
+      <stop offset="70%" stop-color="#7a968a"/>
+      <stop offset="100%" stop-color="#2a4539"/>
+    </linearGradient>
+
+    <!-- Glowing Core Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="subtleGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer Hexagonal Badge -->
+  <polygon points="256,16 480,128 480,384 256,496 32,384 32,128" fill="url(#bgGrad)" stroke="url(#doomGreen)" stroke-width="12" filter="url(#subtleGlow)"/>
+
+  <!-- Inner Hex Ring -->
+  <polygon points="256,40 456,140 456,372 256,472 56,372 56,140" fill="none" stroke="rgba(0, 255, 156, 0.25)" stroke-width="4"/>
+
+  <!-- Latverian Energy Glyphs / Corner Ticks -->
+  <line x1="256" y1="40" x2="256" y2="70" stroke="#00ff9c" stroke-width="6" stroke-linecap="round"/>
+  <line x1="256" y1="472" x2="256" y2="442" stroke="#00ff9c" stroke-width="6" stroke-linecap="round"/>
+  <line x1="56" y1="140" x2="82" y2="155" stroke="#00ff9c" stroke-width="6" stroke-linecap="round"/>
+  <line x1="456" y1="140" x2="430" y2="155" stroke="#00ff9c" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Iconic Avengers "A" with Doom Energy Integration -->
+  <g filter="url(#glow)">
+    <!-- Right Leg of the 'A' -->
+    <polygon points="340,410 400,410 286,104 226,104" fill="url(#chromeMetal)"/>
+    
+    <!-- Left Leg of the 'A' (Doom Emerald) -->
+    <polygon points="226,104 286,104 150,410 90,410" fill="url(#doomGreen)"/>
+    
+    <!-- Crossbar Arrow of the 'A' -->
+    <polygon points="120,296 390,296 420,246 170,246" fill="url(#doomGreen)"/>
+    
+    <!-- Arrowhead Tip Accent -->
+    <polygon points="390,296 450,271 390,246" fill="#ffffff"/>
+
+    <!-- Inner Triangular Core Cutout -->
+    <polygon points="256,168 312,274 200,274" fill="#03140d" stroke="#00ff9c" stroke-width="4"/>
+  </g>
+
+  <!-- Central Glowing Arc Reactor / Cosmic Crucible Core -->
+  <circle cx="256" cy="271" r="14" fill="#ffffff" filter="url(#glow)"/>
+  <circle cx="256" cy="271" r="24" fill="none" stroke="#00ff9c" stroke-width="3" opacity="0.8"/>
+</svg>

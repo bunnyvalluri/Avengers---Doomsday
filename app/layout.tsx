@@ -55,6 +55,13 @@ export const metadata: Metadata = {
     description,
     images: ["/videos/title-reveal-poster.jpg"],
   },
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180" }],
+  },
 };
 
 export const viewport: Viewport = {
