@@ -1,61 +1,10 @@
-"use client";
-
 import { useEffect, useRef } from "react";
 import { signals } from "@/lib/signals";
 import { useRaf } from "@/lib/useRaf";
+import { useExperience } from "@/lib/store";
+import { CHARACTER_DETAILS, CharacterDetail } from "@/lib/constants";
+import { soundEngine } from "@/lib/soundEngine";
 import styles from "./orbit.module.css";
-
-/**
- * Section 2 — the six character cards.
- *
- * Real DOM <video> panels (autoplay · loop · muted · playsInline, object-fit
- * cover, no controls) orbit the central WebGL Doom model. As `signals.showcase`
- * scrubs, the ring rotates; each card eases to the front (large, bright, glowing)
- * then behind the model (small, dim, blurred). Depth is REAL: the wrapper creates
- * no stacking context, so each card's z-index straddles the transparent atmosphere
- * canvas (z3) — front cards (z4) over the model, back cards (z2) genuinely behind
- * it. Videos live in fixed DOM slots and only pause when the section is off-screen,
- * so they never restart, reload, or flicker while orbiting.
- */
-interface Character {
-  slug: string;
-  name: string;
-  desc: string;
-}
-
-// Identified from the uploaded clips. Names/copy are trivially editable here.
-const CHARACTERS: Character[] = [
-  {
-    slug: "doom",
-    name: "Doctor Doom",
-    desc: "The iron-willed sovereign of Latveria — master of science and sorcery, bending every reality to his design.",
-  },
-  {
-    slug: "blackpanther",
-    name: "Black Panther",
-    desc: "Wakanda's fearless protector, striking with the speed, precision, and fury of the panther goddess.",
-  },
-  {
-    slug: "cyclops",
-    name: "Cyclops",
-    desc: "Field leader of the X-Men, unleashing devastating optic force with unshakable discipline and resolve.",
-  },
-  {
-    slug: "mystique",
-    name: "Mystique",
-    desc: "The shape-shifting infiltrator who can wear any face — trusted by none, lethal in every form she takes.",
-  },
-  {
-    slug: "gambit",
-    name: "Gambit",
-    desc: "The Ragin' Cajun — charging every card with explosive kinetic energy and every fight with reckless charm.",
-  },
-  {
-    slug: "namor",
-    name: "Namor",
-    desc: "The winged sovereign of Talokan — as ancient as the deep and as merciless as the tide he commands.",
-  },
-];
 
 const TAU = Math.PI * 2;
 const clamp01 = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
@@ -68,9 +17,9 @@ const smoothstep = (a: number, b: number, x: number) => {
 export default function CharacterOrbit() {
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const setSelectedCharacter = useExperience((s) => s.setSelectedCharacter);
 
-  // Guarantee muted inline playback (works around React not always reflecting the
-  // `muted` attribute) so programmatic play() is never blocked by autoplay policy.
+  // Guarantee muted inline playback so programmatic play() is never blocked
   useEffect(() => {
     videoRefs.current.forEach((v) => {
       if (!v) return;
@@ -102,7 +51,7 @@ export default function CharacterOrbit() {
     const Rx = isMobile ? vw * 0.35 : isTablet ? vw * 0.33 : vw * 0.3; // horizontal orbit radius
     const Ry = isMobile ? vh * 0.11 : isTablet ? vh * 0.13 : vh * 0.15; // vertical tilt
     const base = s * TAU * 0.85 + t * 0.045; // scroll rotates the ring + slow idle
-    const N = CHARACTERS.length;
+    const N = CHARACTER_DETAILS.length;
 
     for (let i = 0; i < N; i++) {
       const card = cardRefs.current[i];
@@ -141,8 +90,8 @@ export default function CharacterOrbit() {
         `translate(-50%, -50%) perspective(1100px) translate3d(${(x + enterX).toFixed(1)}px, ${y.toFixed(1)}px, 0)` +
         ` rotateY(${rotY.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
       card.style.opacity = (lerp(0.32, 1, depth01) * enter).toFixed(3);
-      card.style.pointerEvents = d > 0.3 ? "auto" : "none";
-      card.style.cursor = d > 0.3 ? "pointer" : "default";
+      card.style.pointerEvents = d > 0.2 ? "auto" : "none";
+      card.style.cursor = d > 0.2 ? "pointer" : "default";
       // straddle the atmosphere/model canvas (z3): front over, back behind
       card.style.zIndex = d > 0 ? "4" : "2";
       // depth blur on the far cards
@@ -152,17 +101,24 @@ export default function CharacterOrbit() {
     }
   });
 
+  const handleCardClick = (char: CharacterDetail) => {
+    soundEngine.playClick();
+    setSelectedCharacter(char);
+  };
+
   return (
     <div className={styles.layer} aria-hidden={false}>
-      {CHARACTERS.map((c, i) => (
+      {CHARACTER_DETAILS.map((c, i) => (
         <div
           key={c.slug}
           className={styles.card}
           ref={(el) => {
             cardRefs.current[i] = el;
           }}
+          onClick={() => handleCardClick(c)}
+          onMouseEnter={() => soundEngine.playHover()}
           style={{ visibility: "hidden" }}
-          title={`Hero: ${c.name}`}
+          title={`Inspect Intelligence Dossier: ${c.name}`}
         >
           <video
             ref={(el) => {
@@ -185,14 +141,29 @@ export default function CharacterOrbit() {
           <div className={styles.frame} />
           <div className={styles.tick}>
             <span className={styles.dot} />
-            {`0${i + 1} · Doomsday`}
+            {`0${i + 1} · Dossier`}
           </div>
           <div className={styles.info}>
             <div className={styles.name}>{c.name}</div>
             <div className={styles.desc}>{c.desc}</div>
+            <div
+              style={{
+                fontSize: "9px",
+                letterSpacing: "0.2em",
+                color: "var(--green)",
+                textTransform: "uppercase",
+                marginTop: "6px",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              <span>◈ Inspect File</span>
+            </div>
           </div>
         </div>
       ))}
     </div>
   );
 }
+

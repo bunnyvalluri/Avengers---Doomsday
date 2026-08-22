@@ -1,6 +1,5 @@
 /* ============================================================
-   Chapter Navigation HUD — Interactive Cinematic Wayfinder
-   Preserving all Doom green, dark graphite, and mint colors.
+   Chapter Navigation HUD — Sci-Fi Radar Wayfinder
    ============================================================ */
 
 .navWrap {
@@ -11,10 +10,72 @@
   z-index: 15;
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 12px;
   pointer-events: auto;
   user-select: none;
   transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.radarCard {
+  background: rgba(3, 16, 11, 0.85);
+  border: 1px solid rgba(0, 255, 156, 0.25);
+  border-radius: 8px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 25px rgba(0, 255, 156, 0.12);
+}
+
+.progressRingWrap {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+}
+
+.progressSvg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.progressBg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 2.5;
+}
+
+.progressFill {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 88;
+  stroke-dashoffset: 88;
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.progressText {
+  position: absolute;
+  font-size: 8px;
+  font-weight: 700;
+  font-family: var(--font-ui);
+  color: var(--mint);
+  letter-spacing: -0.05em;
+}
+
+.itemsCol {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
 }
 
 .item {
@@ -25,33 +86,9 @@
   gap: 10px;
   background: transparent;
   border: none;
-  padding: 4px 0;
+  padding: 3px;
   cursor: pointer;
   outline: none;
-}
-
-.label {
-  font-family: var(--font-ui);
-  font-size: 10.5px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--mint);
-  opacity: 0;
-  transform: translateX(8px);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: none;
-  white-space: nowrap;
-  background: rgba(3, 16, 11, 0.75);
-  border: 1px solid rgba(0, 255, 156, 0.2);
-  padding: 4px 8px;
-  border-radius: 4px;
-  backdrop-filter: blur(4px);
-}
-
-.item:hover .label,
-.item:focus-visible .label {
-  opacity: 1;
-  transform: translateX(0);
 }
 
 .dot {
@@ -66,39 +103,94 @@
 .item:hover .dot {
   background: var(--mint);
   border-color: var(--green);
-  transform: scale(1.3);
+  transform: scale(1.4);
+  box-shadow: 0 0 10px var(--green);
 }
 
 .active .dot {
   width: 9px;
   height: 9px;
   background: var(--green) !important;
-  box-shadow: 0 0 12px 2px rgba(0, 255, 156, 0.85);
+  box-shadow: 0 0 14px 3px rgba(0, 255, 156, 0.85);
   border-color: #fff !important;
-  transform: scale(1.2);
+  transform: scale(1.3);
 }
 
-.active .label {
-  opacity: 0.85;
-  transform: translateX(0);
-  border-color: rgba(0, 255, 156, 0.5);
-  color: #fff;
+/* Floating Chapter Tooltip Card */
+.previewCard {
+  position: absolute;
+  right: calc(100% + 14px);
+  top: 50%;
+  transform: translateY(-50%) translateX(10px);
+  opacity: 0;
+  pointer-events: none;
+  background: rgba(2, 12, 8, 0.95);
+  border: 1px solid var(--green);
+  border-radius: 6px;
+  padding: 8px 12px;
+  box-shadow: 0 0 25px rgba(0, 255, 156, 0.3);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  white-space: nowrap;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 20;
+}
+
+.item:hover .previewCard {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.previewKicker {
+  font-size: 8px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--green);
+  font-weight: 700;
+}
+
+.previewTitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.12em;
+}
+
+.shortcutHint {
+  font-size: 8px;
+  color: var(--silver);
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(0, 255, 156, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.shortcutHint kbd {
+  background: rgba(0, 255, 156, 0.15);
+  padding: 1px 4px;
+  border-radius: 2px;
+  color: var(--mint);
 }
 
 @media (max-width: 768px) {
   .navWrap {
     right: 8px;
-    gap: 8px;
   }
-  .label {
+  .radarCard {
+    padding: 6px 4px;
+    gap: 6px;
+  }
+  .previewCard {
     display: none;
   }
-  .dot {
-    width: 6px;
-    height: 6px;
+  .progressRingWrap {
+    width: 24px;
+    height: 24px;
   }
-  .active .dot {
-    width: 8px;
-    height: 8px;
+  .progressText {
+    font-size: 6px;
   }
 }

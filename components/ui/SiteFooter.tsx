@@ -1,35 +1,38 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { signals } from "@/lib/signals";
 import { useRaf } from "@/lib/useRaf";
+import { useExperience } from "@/lib/store";
+import { CHAPTERS_NAV } from "@/lib/constants";
+import { soundEngine } from "@/lib/soundEngine";
 import styles from "./footer.module.css";
 
-/**
- * The closing footer — rises from the bottom after the title reveal, driven by
- * `signals.footer`. Minimal + elegant, in the same dark-green cinematic language.
- * Links are placeholders for now.
- */
 const clamp01 = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
 const smoothstep = (a: number, b: number, x: number) => {
   const t = clamp01((x - a) / (b - a));
   return t * t * (3 - 2 * t);
 };
 
-import { useExperience } from "@/lib/store";
-import { CHAPTERS_NAV } from "@/lib/constants";
-
 const NAV = [
   { name: "Overview", chapterIndex: 1 },
   { name: "Heroes", chapterIndex: 2 },
   { name: "Story", chapterIndex: 3 },
   { name: "Timeline", chapterIndex: 4 },
+  { name: "Finale", chapterIndex: 5 },
 ];
 
 export default function SiteFooter() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const footRef = useRef<HTMLElement>(null);
   const setTicketOpen = useExperience((s) => s.setTicketModalOpen);
+  const setTerminalOpen = useExperience((s) => s.setDossierTerminalOpen);
+  const setShortcutsOpen = useExperience((s) => s.setShortcutsModalOpen);
+  const setCinemaTourActive = useExperience((s) => s.setCinemaTourActive);
+  const showToast = useExperience((s) => s.showToast);
+
+  const [newsletterEmail, setNewsletterEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
 
   useRaf(() => {
     const foot = signals.footer;
@@ -47,6 +50,7 @@ export default function SiteFooter() {
   });
 
   const jumpTo = (chapterIndex: number) => {
+    soundEngine.playTeleport();
     const progress = CHAPTERS_NAV[chapterIndex]?.progress ?? 0;
     const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
     const targetY = progress * totalHeight;
@@ -59,6 +63,14 @@ export default function SiteFooter() {
     }
   };
 
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsletterEmail) return;
+    soundEngine.playSuccess();
+    setSubscribed(true);
+    showToast("Subscribed to Exclusive Marvel Doomsday Dispatch!", "success");
+  };
+
   return (
     <div className={styles.wrap} ref={wrapRef} style={{ visibility: "hidden" }}>
       <footer className={styles.footer} ref={footRef} style={{ opacity: 0 }}>
@@ -68,16 +80,21 @@ export default function SiteFooter() {
             <span className={styles.mark} onClick={() => jumpTo(0)} style={{ cursor: "pointer" }}>
               Doomsday<span>.</span>
             </span>
-            <span className={styles.tag}>A scroll-driven cinematic concept experience.</span>
-            <div style={{ marginTop: "8px" }}>
+            <span className={styles.tag}>
+              An Awwwards-caliber scroll-driven cinematic experience. The multiverse is breaking. Only legends remain.
+            </span>
+            <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap" }}>
               <button
                 type="button"
                 className={styles.cta}
-                onClick={() => setTicketOpen(true)}
+                onClick={() => {
+                  soundEngine.playClick();
+                  setTicketOpen(true);
+                }}
                 style={{
                   background: "linear-gradient(120deg, var(--green), var(--mint))",
                   border: "none",
-                  padding: "8px 16px",
+                  padding: "8px 18px",
                   borderRadius: "4px",
                   color: "#03140d",
                   fontFamily: "var(--font-ui)",
@@ -88,7 +105,29 @@ export default function SiteFooter() {
                   cursor: "pointer",
                 }}
               >
-                Get Tickets
+                Get VIP Tickets
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  soundEngine.playDecryption();
+                  setTerminalOpen(true);
+                }}
+                style={{
+                  background: "rgba(0, 255, 156, 0.08)",
+                  border: "1px solid rgba(0, 255, 156, 0.3)",
+                  padding: "8px 14px",
+                  borderRadius: "4px",
+                  color: "var(--mint)",
+                  fontFamily: "var(--font-ui)",
+                  fontSize: "11px",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  cursor: "pointer",
+                }}
+              >
+                ◈ Multiverse Terminal
               </button>
             </div>
           </div>
@@ -101,6 +140,7 @@ export default function SiteFooter() {
                   key={l.name}
                   type="button"
                   onClick={() => jumpTo(l.chapterIndex)}
+                  onMouseEnter={() => soundEngine.playHover()}
                   style={{
                     background: "transparent",
                     border: "none",
@@ -132,18 +172,78 @@ export default function SiteFooter() {
                   marginTop: "4px",
                 }}
               >
-                ↺ Replay Experience
+                ↺ Replay The Void
               </button>
             </div>
           </nav>
 
           <div>
-            <div className={styles.colHead}>Experience Formats</div>
-            <div className={styles.links}>
-              <span style={{ fontSize: "12.5px", color: "rgba(224, 244, 236, 0.6)" }}>IMAX 3D with Laser</span>
-              <span style={{ fontSize: "12.5px", color: "rgba(224, 244, 236, 0.6)" }}>Dolby Cinema Atmos</span>
-              <span style={{ fontSize: "12.5px", color: "rgba(224, 244, 236, 0.6)" }}>4DX Multi-Sensory</span>
-              <span style={{ fontSize: "12.5px", color: "rgba(224, 244, 236, 0.6)" }}>ScreenX 270°</span>
+            <div className={styles.colHead}>Multiverse Intel</div>
+            {!subscribed ? (
+              <form onSubmit={handleSubscribe} style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <span style={{ fontSize: "11px", color: "rgba(214, 236, 226, 0.6)" }}>
+                  Receive confidential premiere drops &amp; footage unlocks.
+                </span>
+                <div style={{ display: "flex", gap: "4px" }}>
+                  <input
+                    type="email"
+                    required
+                    placeholder="agent@avengers.org"
+                    value={newsletterEmail}
+                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                    style={{
+                      background: "rgba(3, 14, 10, 0.8)",
+                      border: "1px solid rgba(0, 255, 156, 0.25)",
+                      borderRadius: "4px",
+                      padding: "6px 10px",
+                      color: "#fff",
+                      fontSize: "11px",
+                      fontFamily: "var(--font-ui)",
+                      outline: "none",
+                      width: "160px",
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    style={{
+                      background: "var(--green)",
+                      border: "none",
+                      borderRadius: "4px",
+                      color: "#000",
+                      fontWeight: 700,
+                      fontSize: "10px",
+                      padding: "6px 10px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Join
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div style={{ fontSize: "11px", color: "var(--green)", padding: "6px 0" }}>
+                ✓ Transmission confirmed. Standby for dispatch.
+              </div>
+            )}
+            <div style={{ marginTop: "12px", display: "flex", gap: "8px" }}>
+              <button
+                type="button"
+                onClick={() => {
+                  soundEngine.playClick();
+                  setShortcutsOpen(true);
+                }}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--silver)",
+                  fontSize: "11px",
+                  cursor: "pointer",
+                  padding: 0,
+                  textAlign: "left",
+                }}
+              >
+                ⌨ Keyboard Controls (?)
+              </button>
             </div>
           </div>
         </div>
@@ -161,10 +261,10 @@ export default function SiteFooter() {
             >
               VALLURI RAHUL
             </a>
-            . All rights reserved. Fan concept, not affiliated with Marvel.
+            . All rights reserved. Fan concept, not affiliated with Marvel Studios.
           </span>
           <span>
-            Crafted by{" "}
+            Crafted with Next.js, Three.js &amp; Web Audio by{" "}
             <a
               href="https://valluri-rahul-portfolio.vercel.app"
               target="_blank"
@@ -180,3 +280,4 @@ export default function SiteFooter() {
     </div>
   );
 }
+

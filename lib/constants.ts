@@ -112,3 +112,201 @@ export const CHAPTERS_NAV: ChapterInfo[] = [
 ];
 
 export type Phase = "loading" | "intro" | "hero";
+
+export interface CharacterDetail {
+  slug: string;
+  name: string;
+  alias: string;
+  actor: string;
+  origin: string;
+  threatLevel: "ALPHA" | "OMEGA" | "MULTIVERSAL" | "EXTREME";
+  powers: {
+    intelligence: number; // 0-100
+    strength: number;
+    speed: number;
+    durability: number;
+    energyProjection: number;
+    combatSkill: number;
+  };
+  quote: string;
+  desc: string;
+  lore: string;
+  affiliations: string[];
+  signatureWeapons: string[];
+  accentColor: string;
+}
+
+export const CHARACTER_DETAILS: CharacterDetail[] = [
+  {
+    slug: "doom",
+    name: "Victor von Doom",
+    alias: "Doctor Doom / Emperor Doom",
+    actor: "Robert Downey Jr.",
+    origin: "Latveria (Earth-616 Variant / Beyond)",
+    threatLevel: "MULTIVERSAL",
+    powers: {
+      intelligence: 100,
+      strength: 85,
+      speed: 70,
+      durability: 95,
+      energyProjection: 98,
+      combatSkill: 92,
+    },
+    quote: "There is only one will that can preserve existence. Mine.",
+    desc: "The iron-willed sovereign of Latveria — master of science and sorcery, bending every reality to his design.",
+    lore: "Equipped with titanium armor powered by dark cosmic fusion and mastery over Eldritch arts surpassing the Sorcerer Supreme, Doom has orchestrated the convergence of fragmented timelines to birth Battleworld.",
+    affiliations: ["Latverian Sovereignty", "The Cabal", "Council of Dooms"],
+    signatureWeapons: ["Arcane Power Armor", "Chronos Gauntlet", "Doombot Legion"],
+    accentColor: "#00ff9c",
+  },
+  {
+    slug: "blackpanther",
+    name: "Shuri",
+    alias: "Black Panther",
+    actor: "Letitia Wright",
+    origin: "Kingdom of Wakanda",
+    threatLevel: "OMEGA",
+    powers: {
+      intelligence: 98,
+      strength: 78,
+      speed: 88,
+      durability: 85,
+      energyProjection: 75,
+      combatSkill: 94,
+    },
+    quote: "Wakanda stands as the shield against the encroaching dark.",
+    desc: "Wakanda's protector, striking with the speed, precision, and fury of the panther goddess.",
+    lore: "Synthesizing synthetic Heart-Shaped Herb extracts with kinetic-absorbent Vibranium nanotech weave, Shuri leads Wakanda's defense grid as multiverse incursions threaten their borders.",
+    affiliations: ["Avengers", "Wakandan Royal Council", "Midnight Angels"],
+    signatureWeapons: ["Vibranium Nano-Claws", "Kinetic Energy Redistribution Suit", "Sonic Gauntlets"],
+    accentColor: "#38ffb2",
+  },
+  {
+    slug: "cyclops",
+    name: "Scott Summers",
+    alias: "Cyclops",
+    actor: "James Marsden",
+    origin: "Krakoa / Xavier's Institute",
+    threatLevel: "OMEGA",
+    powers: {
+      intelligence: 85,
+      strength: 65,
+      speed: 68,
+      durability: 70,
+      energyProjection: 98,
+      combatSkill: 96,
+    },
+    quote: "To me, my X-Men. Hold the line at all costs.",
+    desc: "Field leader of the X-Men, unleashing devastating optic force with unshakable discipline and tactical genius.",
+    lore: "Possessing eyes that act as dimensional apertures to a universe of non-Einsteinian concussive energy, Cyclops stands as the master field tactician capable of commanding interdimensional mutant forces.",
+    affiliations: ["X-Men", "Krakoan Quiet Council", "Mutant Strike Force"],
+    signatureWeapons: ["Ruby-Quartz Visor", "Tactical Combat Rig", "Optic Beam Focusers"],
+    accentColor: "#00d884",
+  },
+  {
+    slug: "mystique",
+    name: "Raven Darkhölme",
+    alias: "Mystique",
+    actor: "Rebecca Romijn",
+    origin: "Unknown",
+    threatLevel: "ALPHA",
+    powers: {
+      intelligence: 88,
+      strength: 60,
+      speed: 75,
+      durability: 72,
+      energyProjection: 30,
+      combatSkill: 95,
+    },
+    quote: "Perception is a weapon. And I command what you see.",
+    desc: "The shape-shifting infiltrator who can wear any face — trusted by none, lethal in every form she takes.",
+    lore: "With cellular metamorphism granting complete anatomical manipulation and cellular rejuvenation, Raven navigates the shadows of the collapsing multiverse playing both sides until the final hour.",
+    affiliations: ["Brotherhood of Mutants", "Freedom Force", "Independent Operative"],
+    signatureWeapons: ["Suppressed Tactical Pistols", "Biochemical Darts", "Disguise Matrix"],
+    accentColor: "#9dffd6",
+  },
+  {
+    slug: "gambit",
+    name: "Remy LeBeau",
+    alias: "Gambit",
+    actor: "Channing Tatum",
+    origin: "New Orleans, Louisiana",
+    threatLevel: "OMEGA",
+    powers: {
+      intelligence: 78,
+      strength: 65,
+      speed: 84,
+      durability: 70,
+      energyProjection: 92,
+      combatSkill: 93,
+    },
+    quote: "You know how long I been waitin' for this? Woo I'm about to make a name for myself.",
+    desc: "The Ragin' Cajun — charging every card with explosive kinetic energy and every fight with reckless charm.",
+    lore: "Drawing upon kinetic biocells, Gambit converts the potential energy of inanimate objects into explosive concussive kinetic force, weaving acrobatic martial arts with charged cards.",
+    affiliations: ["X-Men", "Thieves Guild", "Marauders"],
+    signatureWeapons: ["Charged Kinetic Playing Cards", "Collapsible Bo Staff", "Duster Armor"],
+    accentColor: "#ff00ea",
+  },
+  {
+    slug: "namor",
+    name: "Namor McKenzie",
+    alias: "The Sub-Mariner / K'uk'ulkan",
+    actor: "Tenoch Huerta",
+    origin: "Talokan",
+    threatLevel: "EXTREME",
+    powers: {
+      intelligence: 84,
+      strength: 96,
+      speed: 90,
+      durability: 95,
+      energyProjection: 80,
+      combatSkill: 92,
+    },
+    quote: "Imperius Rex! The surface world will not dictate the fate of the oceans.",
+    desc: "The winged sovereign of Talokan — as ancient as the deep and as merciless as the tide he commands.",
+    lore: "Mutant demigod endowed with ankle wings for sustained flight, superhuman aquatic physiology, and hydrokinetic vibranium spear mastery, Namor defends his aquatic realm against universal collapse.",
+    affiliations: ["Talokan", "Illuminati", "Invaders"],
+    signatureWeapons: ["Vibranium Sun Spear", "Talokanil Armor", "Winged Ankle Blades"],
+    accentColor: "#00b473",
+  },
+];
+
+export const FORMAT_OPTIONS = [
+  {
+    id: "imax",
+    name: "IMAX 3D Laser",
+    resolution: "4K Dual Laser Dual 1.43:1",
+    audio: "12-Track Immersive Spatial Audio",
+    screen: "70ft Custom Curved Giant Canvas",
+    badge: "Director's Vision",
+    desc: "Custom master filmed with IMAX certified digital cameras, delivering up to 26% more picture.",
+  },
+  {
+    id: "dolby",
+    name: "Dolby Cinema",
+    resolution: "Dolby Vision 4K HDR 1,000,000:1",
+    audio: "Dolby Atmos 128-Object Soundstage",
+    screen: "Premium Matte Low-Reflect Screen",
+    badge: "Deepest Blacks",
+    desc: "Unmatched contrast ratio with moving audio that flows all around you in three-dimensional space.",
+  },
+  {
+    id: "4dx",
+    name: "4DX Extreme Motion",
+    resolution: "Synchronized Real-D 3D",
+    audio: "7.1 Pro Sound Matrix",
+    screen: "Multi-Sensory Environmental Hall",
+    badge: "Tactile Immersion",
+    desc: "High-velocity motion chairs synchronized with wind, lightning, fog, water, and kinetic impact shocks.",
+  },
+  {
+    id: "screenx",
+    name: "ScreenX 270° Panoramic",
+    resolution: "Triple-Projector 270-Degree Field",
+    audio: "Acoustic Surround Array",
+    screen: "Tri-Wall Extended Architecture",
+    badge: "270° Vision",
+    desc: "Expands selected action sequences across left and right auditorium walls for full visual wrap.",
+  },
+];
+

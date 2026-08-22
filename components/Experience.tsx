@@ -6,7 +6,8 @@ import { useLenis } from "@/lib/useLenis";
 import { useExperience } from "@/lib/store";
 import { signals } from "@/lib/signals";
 import { getVideoEl, scrubEl } from "@/lib/videos";
-import { VIDEO, SCROLL, TIMELINE_UNITS } from "@/lib/constants";
+import { soundEngine } from "@/lib/soundEngine";
+import { VIDEO, SCROLL, TIMELINE_UNITS, CHARACTER_DETAILS } from "@/lib/constants";
 
 import CinematicCanvas from "@/components/webgl/CinematicCanvas";
 import VideoLayer from "@/components/overlays/VideoLayer";
@@ -24,10 +25,15 @@ import SiteFooter from "@/components/ui/SiteFooter";
 import ChapterNav from "@/components/ui/ChapterNav";
 import AudioControl from "@/components/ui/AudioControl";
 import TicketModal from "@/components/ui/TicketModal";
+import CharacterDossierModal from "@/components/ui/CharacterDossierModal";
+import MultiverseTerminal from "@/components/ui/MultiverseTerminal";
+import ShortcutsModal from "@/components/ui/ShortcutsModal";
+import CinematicTourHUD from "@/components/ui/CinematicTourHUD";
+import ToastNotification from "@/components/ui/ToastNotification";
+import CustomCursor from "@/components/ui/CustomCursor";
 import { CHAPTERS_NAV } from "@/lib/constants";
 
 // Master timeline positions (arbitrary units; ScrollTrigger scrubs scroll→time).
-// Matches the SCROLL section heights (vh/100) so the scrub feels even.
 const T = {
   introEnd: 1.4,
   marvelEnd: 3.8,
@@ -52,26 +58,20 @@ const T = {
   titleStart: 44.0, // Section 7 — AVENGERS DOOMSDAY title reveal fades in (overlap)
   titleFadeEnd: 44.9,
   footerStart: 47.6, // the minimal footer rises at the very end
-  // total is derived from SCROLL so the scroll↔time map never drifts; the last
-  // tween (footer) ends here to pad the timeline.
   total: TIMELINE_UNITS,
 };
 
-/**
- * The director — but the user holds the reins. A single scrubbed ScrollTrigger
- * master maps scroll position onto every cinematic value: the storm builds, the
- * Marvel intro scrubs frame-by-frame, a portal dive carries the camera into the
- * Hero, then the Doom trailer scrubs. Nothing plays on its own.
- */
 export default function Experience() {
   const [mounted, setMounted] = useState(false);
   useLenis();
   const trackRef = useRef<HTMLDivElement>(null);
   const builtRef = useRef(false);
+  const lastScrollPos = useRef(0);
+  const lastScrollTime = useRef(Date.now());
 
   useEffect(() => setMounted(true), []);
 
-  // ── pointer tracking + video decoder priming (no audio) ─────────
+  // ── pointer tracking + video decoder priming + keyboard navigation ─────────
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
       signals.mtx = (e.clientX / window.innerWidth) * 2 - 1;
@@ -79,8 +79,6 @@ export default function Experience() {
     };
     window.addEventListener("pointermove", onMove, { passive: true });
 
-    // Re-prime the trailers on the first gesture as a safety net so scrubbing
-    // always paints real frames. (The experience is completely silent.)
     let started = false;
     const onGesture = () => {
       if (started) return;
@@ -95,10 +93,92 @@ export default function Experience() {
 
     const onKeyNav = (e: KeyboardEvent) => {
       if (document.activeElement?.tagName === "INPUT" || document.activeElement?.tagName === "TEXTAREA") return;
+
+      const state = useExperience.getState();
+
+      // Space: Toggle Cinema Mode Auto-Tour
+      if (e.code === "Space") {
+        e.preventDefault();
+        const next = !state.cinemaTourActive;
+        state.setCinemaTourActive(next);
+        soundEngine.playClick();
+        state.showToast(next ? "Cinema Auto-Tour Activated" : "Cinema Auto-Tour Paused", "info");
+        return;
+      }
+
+      // T: Open VIP Ticket Modal
+      if (e.code === "KeyT") {
+        e.preventDefault();
+        soundEngine.playClick();
+        state.setTicketModalOpen(!state.ticketModalOpen);
+        return;
+      }
+
+      // M: Toggle Audio
+      if (e.code === "KeyM") {
+        e.preventDefault();
+        const next = !state.audioEnabled;
+        state.setAudioEnabled(next);
+        soundEngine.setMute(!next);
+        if (next) soundEngine.playSuccess();
+        state.showToast(next ? "Audio Synth Online" : "Audio Muted", "info");
+        return;
+      }
+
+      // D: Open Character Dossier
+      if (e.code === "KeyD") {
+        e.preventDefault();
+        soundEngine.playClick();
+        state.setSelectedCharacter(state.selectedCharacter ? null : CHARACTER_DETAILS[0]);
+        return;
+      }
+
+      // ~ / ` : Open Multiverse Terminal
+      if (e.code === "Backquote") {
+        e.preventDefault();
+        soundEngine.playDecryption();
+        state.setDossierTerminalOpen(!state.dossierTerminalOpen);
+        return;
+      }
+
+      // ? / / : Open Shortcuts Cheat Sheet
+      if (e.key === "?" || (e.key === "/" && e.shiftKey)) {
+        e.preventDefault();
+        soundEngine.playClick();
+        state.setShortcutsModalOpen(!state.shortcutsModalOpen);
+        return;
+      }
+
+      // F: Toggle Fullscreen
+      if (e.code === "KeyF") {
+        e.preventDefault();
+        soundEngine.playClick();
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+          state.showToast("Fullscreen Mode Enabled", "info");
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+        return;
+      }
+
+      // R: Rewind to Start
+      if (e.code === "KeyR") {
+        e.preventDefault();
+        soundEngine.playTeleport();
+        const lenis = (window as unknown as { __lenis?: { scrollTo: (y: number, opts: { duration: number }) => void } }).__lenis;
+        if (lenis) lenis.scrollTo(0, { duration: 1.2 });
+        else window.scrollTo({ top: 0, behavior: "smooth" });
+        state.showToast("Rewound to Chapter 01: The Void", "info");
+        return;
+      }
+
+      // J / Down / PageDown: Next chapter
       if (e.key === "ArrowDown" || e.code === "KeyJ" || e.key === "PageDown") {
         const s = signals.scroll;
         const next = CHAPTERS_NAV.find((ch) => ch.progress > s + 0.03) ?? CHAPTERS_NAV[CHAPTERS_NAV.length - 1];
         if (next) {
+          soundEngine.playTeleport();
           const totalY = (document.documentElement.scrollHeight - window.innerHeight) * next.progress;
           const lenis = (window as unknown as { __lenis?: { scrollTo: (y: number, opts: { duration: number }) => void } }).__lenis;
           if (lenis) lenis.scrollTo(totalY, { duration: 1.0 });
@@ -108,6 +188,7 @@ export default function Experience() {
         const s = signals.scroll;
         const prev = [...CHAPTERS_NAV].reverse().find((ch) => ch.progress < s - 0.03) ?? CHAPTERS_NAV[0];
         if (prev) {
+          soundEngine.playTeleport();
           const totalY = (document.documentElement.scrollHeight - window.innerHeight) * prev.progress;
           const lenis = (window as unknown as { __lenis?: { scrollTo: (y: number, opts: { duration: number }) => void } }).__lenis;
           if (lenis) lenis.scrollTo(totalY, { duration: 1.0 });
@@ -122,6 +203,38 @@ export default function Experience() {
       window.removeEventListener("keydown", onKeyNav);
       evs.forEach((e) => window.removeEventListener(e, onGesture));
     };
+  }, []);
+
+  // ── Cinema Mode Auto-Tour Loop ──────────────────────────────────
+  useEffect(() => {
+    let animId: number;
+    let lastTime = performance.now();
+
+    const tourStep = (now: number) => {
+      const state = useExperience.getState();
+      if (state.cinemaTourActive) {
+        const dt = (now - lastTime) / 1000;
+        const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
+        if (scrollMax > 0) {
+          // Normal speed: ~ 450 px / sec * cinemaSpeed
+          const distance = 420 * state.cinemaSpeed * dt;
+          const currentY = window.scrollY;
+          const targetY = currentY + distance;
+
+          if (targetY >= scrollMax) {
+            state.setCinemaTourActive(false);
+            state.showToast("Saga Tour Complete", "success");
+          } else {
+            window.scrollTo({ top: targetY, behavior: "auto" });
+          }
+        }
+      }
+      lastTime = now;
+      animId = requestAnimationFrame(tourStep);
+    };
+
+    animId = requestAnimationFrame(tourStep);
+    return () => cancelAnimationFrame(animId);
   }, []);
 
   // ── scroll-scrubbed master ──────────────────────────────────────
@@ -142,8 +255,17 @@ export default function Experience() {
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           signals.scroll = self.progress;
-          // Drive the DOM trailers directly on the scroll event — synchronous,
-          // never rAF-throttled: fade + frame-accurate seek.
+
+          // Compute velocity for Web Audio synthesis modulation
+          const now = Date.now();
+          const dt = Math.max(1, now - lastScrollTime.current);
+          const dy = Math.abs(self.progress - lastScrollPos.current);
+          const velocity = (dy / dt) * 1000;
+          lastScrollPos.current = self.progress;
+          lastScrollTime.current = now;
+          soundEngine.updateScrollSpeed(velocity);
+
+          // Drive DOM video elements
           const marvel = getVideoEl("marvel");
           const hero = getVideoEl("hero");
           const finale = getVideoEl("finale");
@@ -155,8 +277,6 @@ export default function Experience() {
             hero.style.opacity = signals.heroOp.toFixed(3);
             if (signals.heroOp > 0.002) scrubEl(hero, signals.heroT);
           }
-          // Section 5 — the ending video is scroll-scrubbed exactly like the Hero:
-          // opacity + frame-accurate currentTime driven on the scroll event.
           if (finale) {
             finale.style.opacity = signals.finale.toFixed(3);
             finale.style.visibility = signals.finale > 0.002 ? "visible" : "hidden";
@@ -176,61 +296,53 @@ export default function Experience() {
     tl.to(signals, { energy: 0.28, duration: 0.6 }, T.introEnd);
     tl.to(signals, { marvelT: VIDEO.marvelDur, duration: T.marvelEnd - T.introEnd }, T.introEnd);
 
-    // ── continuous portal dive into the Hero (Marvel out, Hero NOT shown yet) ──
+    // ── continuous portal dive into the Hero ──
     tl.to(signals, { energy: 0.6, duration: 0.5 }, T.marvelEnd);
     tl.to(signals, { portal: 1, duration: 1.0, ease: "power1.in" }, T.portalStart);
     tl.to(signals, { dolly: 1, duration: 1.1 }, T.portalStart);
-    tl.to(signals, { marvelOp: 0, duration: 0.2 }, T.heroEnter - 0.15); // masked by portal whiteout
-    tl.to(signals, { header: 1, duration: 0.7 }, T.heroEnter + 0.05); // website chrome enters
+    tl.to(signals, { marvelOp: 0, duration: 0.2 }, T.heroEnter - 0.15);
+    tl.to(signals, { header: 1, duration: 0.7 }, T.heroEnter + 0.05);
     tl.to(signals, { portal: 0, duration: 0.9, ease: "power1.out" }, T.heroEnter + 0.2);
     tl.to(signals, { dolly: 0, duration: 1.0 }, T.heroEnter + 0.2);
 
-    // ── Section 2a · cinematic text sequence over the atmosphere (video hidden) ──
+    // ── Section 2a · cinematic text sequence ──
     tl.to(signals, { energy: 0.12, duration: 0.8 }, T.heroEnter + 0.3);
-    // (the text beats are driven by CinematicText via scroll windows)
 
-    // ── Section 2b · the Doom video APPEARS (whole, centered) as the focus,
-    //    green atmosphere filling the sides (energy 0.15 → richer haze, no strikes) ──
+    // ── Section 2b · Doom video appears ──
     tl.to(signals, { heroOp: 1, duration: 0.3, ease: "power2.out" }, T.videoStart);
     tl.to(signals, { energy: 0.15, duration: 0.6 }, T.videoStart);
     tl.to(signals, { heroT: VIDEO.heroDur, duration: T.videoEnd - T.videoStart }, T.videoStart);
     tl.to(signals, { energy: 0.13, duration: 0.8 }, T.videoEnd);
 
-    // ── Section 2 (character showcase) rises from the bottom as the Hero fades ──
+    // ── Section 2 (character showcase) ──
     tl.to(signals, { heroOp: 0, duration: 1.0, ease: "power2.in" }, T.showcaseStart);
     tl.to(signals, { showcase: 1, duration: T.showcaseEnd - T.showcaseStart, ease: "none" }, T.showcaseStart);
     tl.to(signals, { energy: 0.22, duration: 1.2, ease: "power1.out" }, T.showcaseStart);
 
-    // ── Section 3 (cinematic story stack) — Section 2 sinks, 6 panels rise + stack ──
+    // ── Section 3 (cinematic story stack) ──
     tl.to(signals, { showcase: 0, duration: 0.9, ease: "power2.inOut" }, T.storyStart);
     tl.to(signals, { story: 1, duration: T.storyEnd - T.storyStart, ease: "none" }, T.storyStart);
-    // richer, calmer haze behind the panels — no lightning (energy < strike threshold)
     tl.to(signals, { energy: 0.18, duration: 1.0, ease: "power1.inOut" }, T.storyStart);
 
-    // ── Section 3 → 4 · story recedes into the horizontal cinematic timeline ──
-    // Panel 6 holds (story stays 1) from 23.4→24.5, then the reel takes over.
-    // StoryStack fades its own layer out on signals.reel, so the hand-off is a
-    // seamless cross-push rather than a cut.
+    // ── Section 4 (horizontal cinematic timeline) ──
     tl.to(signals, { reel: 1, duration: T.reelEnd - T.reelStart, ease: "none" }, T.reelStart);
-    tl.to(signals, { energy: 0.19, duration: 1.4, ease: "power1.out" }, T.reelStart); // green travel haze (no strikes)
+    tl.to(signals, { energy: 0.19, duration: 1.4, ease: "power1.out" }, T.reelStart);
 
-    // ── Section 4 → 5 · the reel exits, the battle video fades in then scrubs ──
+    // ── Section 5 (battle video) ──
     tl.to(signals, { finale: 1, duration: T.finaleFadeEnd - T.finaleStart, ease: "power2.out" }, T.finaleStart);
-    tl.to(signals, { energy: 0.15, duration: 1.6, ease: "power1.inOut" }, T.finaleStart); // calm ending atmosphere
-    // Scroll-scrubbed battle (like the Hero): currentTime tracks scroll position —
-    // down plays forward, up rewinds — through Thor → Doom → Captain America.
+    tl.to(signals, { energy: 0.15, duration: 1.6, ease: "power1.inOut" }, T.finaleStart);
     tl.to(signals, { finaleT: VIDEO.finaleDur, duration: T.finaleScrubEnd - T.finaleScrubStart, ease: "none" }, T.finaleScrubStart);
-    tl.to(signals, { finale: 0, duration: 0.9, ease: "power2.inOut" }, T.mcuStart - 0.2); // battle fades into the timeline artwork
+    tl.to(signals, { finale: 0, duration: 0.9, ease: "power2.inOut" }, T.mcuStart - 0.2);
 
-    // ── Section 6 · the MCU timeline artwork pans vertically ──
+    // ── Section 6 (MCU timeline artwork) ──
     tl.to(signals, { mcu: 1, duration: T.mcuEnd - T.mcuStart, ease: "none" }, T.mcuStart);
     tl.to(signals, { energy: 0.13, duration: 1.4, ease: "power1.inOut" }, T.mcuStart);
 
-    // ── Section 7 · the AVENGERS DOOMSDAY title reveal (autoplay + loop) ──
+    // ── Section 7 (title reveal) ──
     tl.to(signals, { title: 1, duration: T.titleFadeEnd - T.titleStart, ease: "power2.out" }, T.titleStart);
     tl.to(signals, { energy: 0.17, duration: 1.2, ease: "power1.inOut" }, T.titleStart);
 
-    // ── Footer · a minimal close rises at the very end (ends at T.total) ──
+    // ── Footer ──
     tl.to(signals, { footer: 1, duration: T.total - T.footerStart, ease: "power2.out" }, T.footerStart);
 
     if (process.env.NODE_ENV !== "production") {
@@ -256,6 +368,8 @@ export default function Experience() {
 
   return (
     <>
+      <CustomCursor />
+
       <div className="stage">
         {/* real fullscreen <video> trailers (z-index 1) */}
         <VideoLayer />
@@ -268,8 +382,7 @@ export default function Experience() {
         <TimelineImage />
         {/* Section 7 — the AVENGERS DOOMSDAY title reveal, autoplay/loop (z-index 2) */}
         <TitleReveal />
-        {/* Section 2 — character video cards; z-auto wrapper so each card's
-            z-index straddles the atmosphere canvas (front over / behind the model) */}
+        {/* Section 2 — character video cards */}
         <CharacterOrbit />
         {/* transparent green atmosphere on top (z-index 3) */}
         {mounted && <CinematicCanvas />}
@@ -284,6 +397,11 @@ export default function Experience() {
       <ChapterNav />
       <AudioControl />
       <TicketModal />
+      <CharacterDossierModal />
+      <MultiverseTerminal />
+      <ShortcutsModal />
+      <CinematicTourHUD />
+      <ToastNotification />
 
       {/* invisible scroll track — the distance the scrub travels over */}
       <div className="scroll-track" ref={trackRef} aria-hidden>
@@ -300,3 +418,4 @@ export default function Experience() {
     </>
   );
 }
+
